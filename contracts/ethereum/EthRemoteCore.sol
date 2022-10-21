@@ -14,7 +14,7 @@ interface IStarknetCore {
     ) external;
 }
 
-contract EthereumDepositContract{
+contract EthRemoteCore{
 
   IStarknetCore starknetCore;
   constructor(IStarknetCore _starknetCore) {

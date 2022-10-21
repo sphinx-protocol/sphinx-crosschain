@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 let account1,
-  account2, Contract, contract;
+  account2, EthRemoteCore, ethRemoteCore;
 
 beforeEach(async () => {
   [account1, account2] =
@@ -11,8 +11,8 @@ beforeEach(async () => {
 
 describe("test contract", function () {
     it("Should deploy test contract", async function () {
-        Contract = await ethers.getContractFactory("test");
-        contract = await Contract.deploy();
-        await contract.deployed();
+      EthRemoteCore = await ethers.getContractFactory("EthRemoteCore");
+      ethRemoteCore = await EthRemoteCore.deploy("0x0000000000000000000000000000000000000000");
+        await ethRemoteCore.deployed();
     })
 });
