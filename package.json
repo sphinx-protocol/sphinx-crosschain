@@ -20,6 +20,7 @@
   "dependencies": {
     "@toruslabs/starkware-crypto": "^1.1.0",
     "axios": "^0.24.0",
-    "hardhat": "2.9.9"
+    "hardhat": "2.9.9",
+    "@snapshot-labs/sx": "0.1.0-beta.12"
   }
 }
