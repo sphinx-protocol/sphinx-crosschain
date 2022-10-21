@@ -70,6 +70,110 @@ namespace EIP712 {
     // @param salt Signature salt
     // @param target Address of the space contract where the user is casting a vote
     // @param calldata Vote calldata
+    func verify_signed_message{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr,
+        bitwise_ptr: BitwiseBuiltin*,
+    }(
+        r: Uint256,
+        s: Uint256,
+        v: felt,
+        salt: Uint256,
+        target: felt,
+        calldata_len: felt,
+        calldata: felt*,
+    ) {
+        alloc_locals;
+
+        MathUtils.assert_valid_uint256(r);
+        MathUtils.assert_valid_uint256(s);
+        MathUtils.assert_valid_uint256(salt);
+
+        let voter_address = calldata[0];
+        let (authenticator_address) = get_contract_address();
+        let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
+
+        // Ensure voter has not already used this salt in a previous action
+        let (already_used) = EIP712_salts.read(voter_address, salt);
+        with_attr error_message("EIP712: Salt already used") {
+            assert already_used = 0;
+        }
+
+        let (space) = MathUtils.felt_to_uint256(target);
+
+        let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
+
+        let (proposal_id) = MathUtils.felt_to_uint256(calldata[1]);
+        let (choice) = MathUtils.felt_to_uint256(calldata[2]);
+
+        let used_voting_strategies_len = calldata[3];
+        let used_voting_strategies = &calldata[4];
+        let (used_voting_strategies_hash) = _get_padded_hash(
+            used_voting_strategies_len, used_voting_strategies
+        );
+
+        let user_voting_strategy_params_flat_len = calldata[4 + used_voting_strategies_len];
+        let user_voting_strategy_params_flat = &calldata[5 + used_voting_strategies_len];
+        let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
+            user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
+        );
+
+        // Now construct the data hash (hashStruct)
+        let (data: Uint256*) = alloc();
+        assert data[0] = Uint256(VOTE_TYPE_HASH_LOW, VOTE_TYPE_HASH_HIGH);
+        assert data[1] = auth_address_u256;
+        assert data[2] = space;
+        assert data[3] = voter_address_u256;
+        assert data[4] = proposal_id;
+        assert data[5] = choice;
+        assert data[6] = used_voting_strategies_hash;
+        assert data[7] = user_voting_strategy_params_flat_hash;
+        assert data[8] = salt;
+
+        let (local keccak_ptr: felt*) = alloc();
+        let keccak_ptr_start = keccak_ptr;
+
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(9, data);
+
+        // Prepare the encoded data
+        let (prepared_encoded: Uint256*) = alloc();
+        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+        assert prepared_encoded[1] = hash_struct;
+
+        // Prepend the ethereum prefix
+        let (encoded_data: Uint256*) = alloc();
+        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+
+        // Now go from Uint256s to Uint64s (required in order to call `keccak`)
+        let (signable_bytes) = alloc();
+        let signable_bytes_start = signable_bytes;
+        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+
+        // Compute the hash
+        let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+        );
+
+        // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+        // We substract `27` because `v` = `{0, 1} + 27`
+        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, voter_address);
+
+        // Verify that all the previous keccaks are correct
+        finalize_keccak(keccak_ptr_start, keccak_ptr);
+
+        // Write the salt to prevent replay attack
+        EIP712_salts.write(voter_address, salt, 1);
+        return ();
+    }
+
+    // @dev Asserts that a signature to cast a vote is valid
+    // @param r Signature parameter
+    // @param s Signature parameter
+    // @param v Signature parameter
+    // @param salt Signature salt
+    // @param target Address of the space contract where the user is casting a vote
+    // @param calldata Vote calldata
     func verify_vote_sig{
         syscall_ptr: felt*,
         pedersen_ptr: HashBuiltin*,
@@ -174,288 +278,288 @@ namespace EIP712 {
     // @param salt Signature salt
     // @param target Address of the space contract where the user is creating a proposal
     // @param calldata Propose calldata
-    func verify_propose_sig{
-        syscall_ptr: felt*,
-        pedersen_ptr: HashBuiltin*,
-        range_check_ptr,
-        bitwise_ptr: BitwiseBuiltin*,
-    }(
-        r: Uint256,
-        s: Uint256,
-        v: felt,
-        salt: Uint256,
-        target: felt,
-        calldata_len: felt,
-        calldata: felt*,
-    ) {
-        alloc_locals;
+//     func verify_propose_sig{
+//         syscall_ptr: felt*,
+//         pedersen_ptr: HashBuiltin*,
+//         range_check_ptr,
+//         bitwise_ptr: BitwiseBuiltin*,
+//     }(
+//         r: Uint256,
+//         s: Uint256,
+//         v: felt,
+//         salt: Uint256,
+//         target: felt,
+//         calldata_len: felt,
+//         calldata: felt*,
+//     ) {
+//         alloc_locals;
 
-        MathUtils.assert_valid_uint256(r);
-        MathUtils.assert_valid_uint256(s);
-        MathUtils.assert_valid_uint256(salt);
+//         MathUtils.assert_valid_uint256(r);
+//         MathUtils.assert_valid_uint256(s);
+//         MathUtils.assert_valid_uint256(salt);
 
-        // Proposer address should be located in calldata[0]
-        let proposer_address = calldata[0];
+//         // Proposer address should be located in calldata[0]
+//         let proposer_address = calldata[0];
 
-        let (authenticator_address) = get_contract_address();
-        let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
+//         let (authenticator_address) = get_contract_address();
+//         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
 
-        // Ensure proposer has not already used this salt in a previous action
-        let (already_used) = EIP712_salts.read(proposer_address, salt);
-        with_attr error_message("EIP712: Salt already used") {
-            assert already_used = 0;
-        }
+//         // Ensure proposer has not already used this salt in a previous action
+//         let (already_used) = EIP712_salts.read(proposer_address, salt);
+//         with_attr error_message("EIP712: Salt already used") {
+//             assert already_used = 0;
+//         }
 
-        let (local keccak_ptr: felt*) = alloc();
-        let keccak_ptr_start = keccak_ptr;
+//         let (local keccak_ptr: felt*) = alloc();
+//         let keccak_ptr_start = keccak_ptr;
 
-        // We don't need to pad because calling `.address` with starknet.js
-        // already left pads the address with 0s
-        let (space) = MathUtils.felt_to_uint256(target);
+//         // We don't need to pad because calling `.address` with starknet.js
+//         // already left pads the address with 0s
+//         let (space) = MathUtils.felt_to_uint256(target);
 
-        // Proposer address
-        let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
+//         // Proposer address
+//         let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
 
-        // Metadata URI
-        let metadata_uri_string_len = calldata[1];
-        let metadata_uri_len = calldata[2];
-        let metadata_uri: felt* = &calldata[3];
-        let (metadata_uri_hash) = _keccak_ints_sequence{keccak_ptr=keccak_ptr}(
-            metadata_uri_string_len, metadata_uri_len, metadata_uri
-        );
+//         // Metadata URI
+//         let metadata_uri_string_len = calldata[1];
+//         let metadata_uri_len = calldata[2];
+//         let metadata_uri: felt* = &calldata[3];
+//         let (metadata_uri_hash) = _keccak_ints_sequence{keccak_ptr=keccak_ptr}(
+//             metadata_uri_string_len, metadata_uri_len, metadata_uri
+//         );
 
-        // Execution Strategy
-        let execution_strategy = calldata[3 + metadata_uri_len];
-        let (execution_strategy_u256) = MathUtils.felt_to_uint256(execution_strategy);
+//         // Execution Strategy
+//         let execution_strategy = calldata[3 + metadata_uri_len];
+//         let (execution_strategy_u256) = MathUtils.felt_to_uint256(execution_strategy);
 
-        // Used voting strategies
-        let used_voting_strats_len = calldata[4 + metadata_uri_len];
-        let used_voting_strats = &calldata[5 + metadata_uri_len];
-        let (used_voting_strategies_hash) = _get_padded_hash(
-            used_voting_strats_len, used_voting_strats
-        );
+//         // Used voting strategies
+//         let used_voting_strats_len = calldata[4 + metadata_uri_len];
+//         let used_voting_strats = &calldata[5 + metadata_uri_len];
+//         let (used_voting_strategies_hash) = _get_padded_hash(
+//             used_voting_strats_len, used_voting_strats
+//         );
 
-        // User voting strategy params flat
-        let user_voting_strat_params_flat_len = calldata[5 + metadata_uri_len + used_voting_strats_len];
-        let user_voting_strat_params_flat = &calldata[6 + metadata_uri_len + used_voting_strats_len];
-        let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
-            user_voting_strat_params_flat_len, user_voting_strat_params_flat
-        );
+//         // User voting strategy params flat
+//         let user_voting_strat_params_flat_len = calldata[5 + metadata_uri_len + used_voting_strats_len];
+//         let user_voting_strat_params_flat = &calldata[6 + metadata_uri_len + used_voting_strats_len];
+//         let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
+//             user_voting_strat_params_flat_len, user_voting_strat_params_flat
+//         );
 
-        // Execution hash
-        let execution_params_len = calldata[6 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len];
-        let execution_params_ptr: felt* = &calldata[7 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len];
-        let (execution_hash) = _get_padded_hash(execution_params_len, execution_params_ptr);
+//         // Execution hash
+//         let execution_params_len = calldata[6 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len];
+//         let execution_params_ptr: felt* = &calldata[7 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len];
+//         let (execution_hash) = _get_padded_hash(execution_params_len, execution_params_ptr);
 
-        // Now construct the data hash (hashStruct)
-        let (data: Uint256*) = alloc();
+//         // Now construct the data hash (hashStruct)
+//         let (data: Uint256*) = alloc();
 
-        assert data[0] = Uint256(PROPOSAL_TYPE_HASH_LOW, PROPOSAL_TYPE_HASH_HIGH);
-        assert data[1] = auth_address_u256;
-        assert data[2] = space;
-        assert data[3] = proposer_address_u256;
-        assert data[4] = metadata_uri_hash;
-        assert data[5] = execution_strategy_u256;
-        assert data[6] = execution_hash;
-        assert data[7] = used_voting_strategies_hash;
-        assert data[8] = user_voting_strategy_params_flat_hash;
-        assert data[9] = salt;
+//         assert data[0] = Uint256(PROPOSAL_TYPE_HASH_LOW, PROPOSAL_TYPE_HASH_HIGH);
+//         assert data[1] = auth_address_u256;
+//         assert data[2] = space;
+//         assert data[3] = proposer_address_u256;
+//         assert data[4] = metadata_uri_hash;
+//         assert data[5] = execution_strategy_u256;
+//         assert data[6] = execution_hash;
+//         assert data[7] = used_voting_strategies_hash;
+//         assert data[8] = user_voting_strategy_params_flat_hash;
+//         assert data[9] = salt;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(10, data);
+//         let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(10, data);
 
-        // Prepare the encoded data
-        let (prepared_encoded: Uint256*) = alloc();
-        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
-        assert prepared_encoded[1] = hash_struct;
+//         // Prepare the encoded data
+//         let (prepared_encoded: Uint256*) = alloc();
+//         assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+//         assert prepared_encoded[1] = hash_struct;
 
-        // Prepend the ethereum prefix
-        let (encoded_data: Uint256*) = alloc();
-        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+//         // Prepend the ethereum prefix
+//         let (encoded_data: Uint256*) = alloc();
+//         _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
 
-        // Now go from Uint256s to Uint64s (required in order to call `keccak`)
-        let (signable_bytes) = alloc();
-        let signable_bytes_start = signable_bytes;
-        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+//         // Now go from Uint256s to Uint64s (required in order to call `keccak`)
+//         let (signable_bytes) = alloc();
+//         let signable_bytes_start = signable_bytes;
+//         keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
 
-        // Compute the hash
-        let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
-            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
-        );
+//         // Compute the hash
+//         let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+//             inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+//         );
 
-        // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
-        // We substract `27` because `v` = `{0, 1} + 27`
-        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, proposer_address);
+//         // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+//         // We substract `27` because `v` = `{0, 1} + 27`
+//         verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, proposer_address);
 
-        // Verify that all the previous keccaks are correct
-        finalize_keccak(keccak_ptr_start, keccak_ptr);
+//         // Verify that all the previous keccaks are correct
+//         finalize_keccak(keccak_ptr_start, keccak_ptr);
 
-        // Write the salt to prevent replay attack
-        EIP712_salts.write(proposer_address, salt, 1);
+//         // Write the salt to prevent replay attack
+//         EIP712_salts.write(proposer_address, salt, 1);
 
-        return ();
-    }
+//         return ();
+//     }
 
-    // @dev Asserts that a signature to authorize a session key is valid
-    // @param r Signature parameter
-    // @param s Signature parameter
-    // @param v Signature parameter
-    // @param salt Signature salt
-    // @param eth_address Owner's Ethereum Address that was used to create the signature
-    // @param session_public_key The StarkNet session public key that should be registered
-    // @param session_duration The number of seconds that the session key is valid
-    func verify_session_key_auth_sig{
-        syscall_ptr: felt*,
-        pedersen_ptr: HashBuiltin*,
-        bitwise_ptr: BitwiseBuiltin*,
-        range_check_ptr,
-    }(
-        r: Uint256,
-        s: Uint256,
-        v: felt,
-        salt: Uint256,
-        eth_address: felt,
-        session_public_key: felt,
-        session_duration: felt,
-    ) -> () {
-        alloc_locals;
+//     // @dev Asserts that a signature to authorize a session key is valid
+//     // @param r Signature parameter
+//     // @param s Signature parameter
+//     // @param v Signature parameter
+//     // @param salt Signature salt
+//     // @param eth_address Owner's Ethereum Address that was used to create the signature
+//     // @param session_public_key The StarkNet session public key that should be registered
+//     // @param session_duration The number of seconds that the session key is valid
+//     func verify_session_key_auth_sig{
+//         syscall_ptr: felt*,
+//         pedersen_ptr: HashBuiltin*,
+//         bitwise_ptr: BitwiseBuiltin*,
+//         range_check_ptr,
+//     }(
+//         r: Uint256,
+//         s: Uint256,
+//         v: felt,
+//         salt: Uint256,
+//         eth_address: felt,
+//         session_public_key: felt,
+//         session_duration: felt,
+//     ) -> () {
+//         alloc_locals;
 
-        MathUtils.assert_valid_uint256(r);
-        MathUtils.assert_valid_uint256(s);
-        MathUtils.assert_valid_uint256(salt);
+//         MathUtils.assert_valid_uint256(r);
+//         MathUtils.assert_valid_uint256(s);
+//         MathUtils.assert_valid_uint256(salt);
 
-        // Ensure user has not already used this salt in a previous action
-        let (already_used) = EIP712_salts.read(eth_address, salt);
-        with_attr error_message("EIP712: Salt already used") {
-            assert already_used = 0;
-        }
+//         // Ensure user has not already used this salt in a previous action
+//         let (already_used) = EIP712_salts.read(eth_address, salt);
+//         with_attr error_message("EIP712: Salt already used") {
+//             assert already_used = 0;
+//         }
 
-        // Encode data
-        let (eth_address_u256) = MathUtils.felt_to_uint256(eth_address);
+//         // Encode data
+//         let (eth_address_u256) = MathUtils.felt_to_uint256(eth_address);
 
-        let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
-        let (padded_session_public_key) = _pad_right(session_public_key_u256);
+//         let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
+//         let (padded_session_public_key) = _pad_right(session_public_key_u256);
 
-        let (session_duration_u256) = MathUtils.felt_to_uint256(session_duration);
+//         let (session_duration_u256) = MathUtils.felt_to_uint256(session_duration);
 
-        // Now construct the data array
-        let (data: Uint256*) = alloc();
-        assert data[0] = Uint256(SESSION_KEY_INIT_TYPE_HASH_LOW, SESSION_KEY_INIT_TYPE_HASH_HIGH);
-        assert data[1] = eth_address_u256;
-        assert data[2] = padded_session_public_key;
-        assert data[3] = session_duration_u256;
-        assert data[4] = salt;
+//         // Now construct the data array
+//         let (data: Uint256*) = alloc();
+//         assert data[0] = Uint256(SESSION_KEY_INIT_TYPE_HASH_LOW, SESSION_KEY_INIT_TYPE_HASH_HIGH);
+//         assert data[1] = eth_address_u256;
+//         assert data[2] = padded_session_public_key;
+//         assert data[3] = session_duration_u256;
+//         assert data[4] = salt;
 
-        // Hash the data array
-        let (local keccak_ptr: felt*) = alloc();
-        let keccak_ptr_start = keccak_ptr;
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(5, data);
+//         // Hash the data array
+//         let (local keccak_ptr: felt*) = alloc();
+//         let keccak_ptr_start = keccak_ptr;
+//         let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(5, data);
 
-        // Prepend the domain separator hash
-        let (prepared_encoded: Uint256*) = alloc();
-        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
-        assert prepared_encoded[1] = hash_struct;
+//         // Prepend the domain separator hash
+//         let (prepared_encoded: Uint256*) = alloc();
+//         assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+//         assert prepared_encoded[1] = hash_struct;
 
-        // Prepend the ethereum prefix
-        let (encoded_data: Uint256*) = alloc();
-        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+//         // Prepend the ethereum prefix
+//         let (encoded_data: Uint256*) = alloc();
+//         _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
 
-        // Now go from Uint256s to Uint64s (required for the cairo keccak implementation)
-        let (signable_bytes) = alloc();
-        let signable_bytes_start = signable_bytes;
-        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+//         // Now go from Uint256s to Uint64s (required for the cairo keccak implementation)
+//         let (signable_bytes) = alloc();
+//         let signable_bytes_start = signable_bytes;
+//         keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
 
-        // Compute the hash
-        let (msg_hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
-            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
-        );
+//         // Compute the hash
+//         let (msg_hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+//             inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+//         );
 
-        // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
-        // We substract `27` because `v` = `{0, 1} + 27`
-        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(msg_hash, r, s, v - 27, eth_address);
+//         // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+//         // We substract `27` because `v` = `{0, 1} + 27`
+//         verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(msg_hash, r, s, v - 27, eth_address);
 
-        // Verify that all the previous keccaks are correct
-        finalize_keccak(keccak_ptr_start, keccak_ptr);
+//         // Verify that all the previous keccaks are correct
+//         finalize_keccak(keccak_ptr_start, keccak_ptr);
 
-        // Write the salt to prevent replay attack
-        EIP712_salts.write(eth_address, salt, 1);
+//         // Write the salt to prevent replay attack
+//         EIP712_salts.write(eth_address, salt, 1);
 
-        return ();
-    }
+//         return ();
+//     }
 
-    // @dev Asserts that a signature to revoke a session key is valid
-    // @param r Signature parameter
-    // @param s Signature parameter
-    // @param v Signature parameter
-    // @param salt Signature salt
-    // @param eth_address Owner's Ethereum Address that was used to create the signature
-    // @param session_public_key The StarkNet session public key that should be revoked
-    func verify_session_key_revoke_sig{
-        syscall_ptr: felt*,
-        pedersen_ptr: HashBuiltin*,
-        bitwise_ptr: BitwiseBuiltin*,
-        range_check_ptr,
-    }(
-        r: Uint256, s: Uint256, v: felt, salt: Uint256, eth_address: felt, session_public_key: felt
-    ) -> () {
-        alloc_locals;
+//     // @dev Asserts that a signature to revoke a session key is valid
+//     // @param r Signature parameter
+//     // @param s Signature parameter
+//     // @param v Signature parameter
+//     // @param salt Signature salt
+//     // @param eth_address Owner's Ethereum Address that was used to create the signature
+//     // @param session_public_key The StarkNet session public key that should be revoked
+//     func verify_session_key_revoke_sig{
+//         syscall_ptr: felt*,
+//         pedersen_ptr: HashBuiltin*,
+//         bitwise_ptr: BitwiseBuiltin*,
+//         range_check_ptr,
+//     }(
+//         r: Uint256, s: Uint256, v: felt, salt: Uint256, eth_address: felt, session_public_key: felt
+//     ) -> () {
+//         alloc_locals;
 
-        MathUtils.assert_valid_uint256(r);
-        MathUtils.assert_valid_uint256(s);
-        MathUtils.assert_valid_uint256(salt);
+//         MathUtils.assert_valid_uint256(r);
+//         MathUtils.assert_valid_uint256(s);
+//         MathUtils.assert_valid_uint256(salt);
 
-        // Ensure user has not already used this salt in a previous action
-        let (already_used) = EIP712_salts.read(eth_address, salt);
-        with_attr error_message("EIP712: Salt already used") {
-            assert already_used = 0;
-        }
+//         // Ensure user has not already used this salt in a previous action
+//         let (already_used) = EIP712_salts.read(eth_address, salt);
+//         with_attr error_message("EIP712: Salt already used") {
+//             assert already_used = 0;
+//         }
 
-        // Encode data
-        let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
-        let (padded_session_public_key) = _pad_right(session_public_key_u256);
+//         // Encode data
+//         let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
+//         let (padded_session_public_key) = _pad_right(session_public_key_u256);
 
-        // Now construct the data array
-        let (data: Uint256*) = alloc();
-        assert data[0] = Uint256(SESSION_KEY_REVOKE_TYPE_HASH_LOW, SESSION_KEY_REVOKE_TYPE_HASH_HIGH);
-        assert data[1] = padded_session_public_key;
-        assert data[2] = salt;
+//         // Now construct the data array
+//         let (data: Uint256*) = alloc();
+//         assert data[0] = Uint256(SESSION_KEY_REVOKE_TYPE_HASH_LOW, SESSION_KEY_REVOKE_TYPE_HASH_HIGH);
+//         assert data[1] = padded_session_public_key;
+//         assert data[2] = salt;
 
-        // Hash the data array
-        let (local keccak_ptr: felt*) = alloc();
-        let keccak_ptr_start = keccak_ptr;
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(3, data);
+//         // Hash the data array
+//         let (local keccak_ptr: felt*) = alloc();
+//         let keccak_ptr_start = keccak_ptr;
+//         let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(3, data);
 
-        // Prepend the domain separator hash
-        let (prepared_encoded: Uint256*) = alloc();
-        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
-        assert prepared_encoded[1] = hash_struct;
+//         // Prepend the domain separator hash
+//         let (prepared_encoded: Uint256*) = alloc();
+//         assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+//         assert prepared_encoded[1] = hash_struct;
 
-        // Prepend the ethereum prefix
-        let (encoded_data: Uint256*) = alloc();
-        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+//         // Prepend the ethereum prefix
+//         let (encoded_data: Uint256*) = alloc();
+//         _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
 
-        // Now go from Uint256s to Uint64s (required for the cairo keccak implementation)
-        let (signable_bytes) = alloc();
-        let signable_bytes_start = signable_bytes;
-        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+//         // Now go from Uint256s to Uint64s (required for the cairo keccak implementation)
+//         let (signable_bytes) = alloc();
+//         let signable_bytes_start = signable_bytes;
+//         keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
 
-        // Compute the hash
-        let (msg_hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
-            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
-        );
+//         // Compute the hash
+//         let (msg_hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+//             inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+//         );
 
-        // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
-        // We substract `27` because `v` = `{0, 1} + 27`
-        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(msg_hash, r, s, v - 27, eth_address);
+//         // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+//         // We substract `27` because `v` = `{0, 1} + 27`
+//         verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(msg_hash, r, s, v - 27, eth_address);
 
-        // Verify that all the previous keccaks are correct
-        finalize_keccak(keccak_ptr_start, keccak_ptr);
+//         // Verify that all the previous keccaks are correct
+//         finalize_keccak(keccak_ptr_start, keccak_ptr);
 
-        // Write the salt to prevent replay attack
-        EIP712_salts.write(eth_address, salt, 1);
+//         // Write the salt to prevent replay attack
+//         EIP712_salts.write(eth_address, salt, 1);
 
-        return ();
-    }
-}
+//         return ();
+//     }
+// }
 
 //
 //  Private Functions
