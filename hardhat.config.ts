@@ -31,7 +31,9 @@ const config: HardhatUserConfig = {
             url: "http://127.0.0.1:5050"
         },
         integratedDevnet: {
-            url: "http://127.0.0.1:5050"
+            url: "http://127.0.0.1:5050",
+            args: ["--lite-mode"],
+            stdout: "STDOUT"
             // venv: "active",
             // dockerizedVersion: "<DEVNET_VERSION>",
         },

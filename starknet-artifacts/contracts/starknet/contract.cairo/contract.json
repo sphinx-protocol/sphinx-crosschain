@@ -1437,7 +1437,20 @@
                         "__main__.increase_balance"
                     ],
                     "flow_tracking_data": null,
-                    "hints": [],
+                    "hints": [
+                        {
+                            "location": {
+                                "end_col": 25,
+                                "end_line": 19,
+                                "input_file": {
+                                    "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
+                                },
+                                "start_col": 5,
+                                "start_line": 19
+                            },
+                            "n_prefix_newlines": 0
+                        }
+                    ],
                     "inst": {
                         "end_col": 33,
                         "end_line": 13,
@@ -1461,12 +1474,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 32,
-                                                "end_line": 19,
+                                                "end_line": 20,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 5,
-                                                "start_line": 19
+                                                "start_line": 20
                                             },
                                             "While trying to retrieve the implicit argument 'syscall_ptr' in:"
                                         ],
@@ -1515,12 +1528,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 32,
-                                                "end_line": 19,
+                                                "end_line": 20,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 5,
-                                                "start_line": 19
+                                                "start_line": 20
                                             },
                                             "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
                                         ],
@@ -1569,12 +1582,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 32,
-                                                "end_line": 19,
+                                                "end_line": 20,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 5,
-                                                "start_line": 19
+                                                "start_line": 20
                                             },
                                             "While trying to retrieve the implicit argument 'range_check_ptr' in:"
                                         ],
@@ -1602,12 +1615,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 31,
-                        "end_line": 19,
+                        "end_line": 20,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 19,
-                        "start_line": 19
+                        "start_line": 20
                     }
                 },
                 "55": {
@@ -1620,12 +1633,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 32,
-                        "end_line": 19,
+                        "end_line": 20,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 5,
-                        "start_line": 19
+                        "start_line": 20
                     }
                 },
                 "57": {
@@ -1638,12 +1651,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 15,
-                        "end_line": 20,
+                        "end_line": 21,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 5,
-                        "start_line": 20
+                        "start_line": 21
                     }
                 },
                 "58": {
@@ -2367,7 +2380,7 @@
                     "hints": [],
                     "inst": {
                         "end_col": 23,
-                        "end_line": 26,
+                        "end_line": 27,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
@@ -2381,12 +2394,12 @@
                                 "parent_location": [
                                     {
                                         "end_col": 31,
-                                        "end_line": 30,
+                                        "end_line": 31,
                                         "input_file": {
                                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                         },
                                         "start_col": 17,
-                                        "start_line": 30
+                                        "start_line": 31
                                     },
                                     "While trying to retrieve the implicit argument 'syscall_ptr' in:"
                                 ],
@@ -2396,7 +2409,7 @@
                             "While expanding the reference 'syscall_ptr' in:"
                         ],
                         "start_col": 5,
-                        "start_line": 26
+                        "start_line": 27
                     }
                 },
                 "77": {
@@ -2409,7 +2422,7 @@
                     "hints": [],
                     "inst": {
                         "end_col": 31,
-                        "end_line": 27,
+                        "end_line": 28,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
@@ -2423,12 +2436,12 @@
                                 "parent_location": [
                                     {
                                         "end_col": 31,
-                                        "end_line": 30,
+                                        "end_line": 31,
                                         "input_file": {
                                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                         },
                                         "start_col": 17,
-                                        "start_line": 30
+                                        "start_line": 31
                                     },
                                     "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
                                 ],
@@ -2438,7 +2451,7 @@
                             "While expanding the reference 'pedersen_ptr' in:"
                         ],
                         "start_col": 5,
-                        "start_line": 27
+                        "start_line": 28
                     }
                 },
                 "78": {
@@ -2451,7 +2464,7 @@
                     "hints": [],
                     "inst": {
                         "end_col": 20,
-                        "end_line": 28,
+                        "end_line": 29,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
@@ -2465,12 +2478,12 @@
                                 "parent_location": [
                                     {
                                         "end_col": 31,
-                                        "end_line": 30,
+                                        "end_line": 31,
                                         "input_file": {
                                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                         },
                                         "start_col": 17,
-                                        "start_line": 30
+                                        "start_line": 31
                                     },
                                     "While trying to retrieve the implicit argument 'range_check_ptr' in:"
                                 ],
@@ -2480,7 +2493,7 @@
                             "While expanding the reference 'range_check_ptr' in:"
                         ],
                         "start_col": 5,
-                        "start_line": 28
+                        "start_line": 29
                     }
                 },
                 "79": {
@@ -2493,12 +2506,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 31,
-                        "end_line": 30,
+                        "end_line": 31,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 17,
-                        "start_line": 30
+                        "start_line": 31
                     }
                 },
                 "81": {
@@ -2508,15 +2521,28 @@
                         "__main__.get_balance"
                     ],
                     "flow_tracking_data": null,
-                    "hints": [],
+                    "hints": [
+                        {
+                            "location": {
+                                "end_col": 39,
+                                "end_line": 32,
+                                "input_file": {
+                                    "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
+                                },
+                                "start_col": 5,
+                                "start_line": 32
+                            },
+                            "n_prefix_newlines": 0
+                        }
+                    ],
                     "inst": {
                         "end_col": 22,
-                        "end_line": 31,
+                        "end_line": 33,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 5,
-                        "start_line": 31
+                        "start_line": 33
                     }
                 },
                 "82": {
@@ -2538,12 +2564,12 @@
                                 "parent_location": [
                                     {
                                         "end_col": 17,
-                                        "end_line": 25,
+                                        "end_line": 26,
                                         "input_file": {
                                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                         },
                                         "start_col": 6,
-                                        "start_line": 25
+                                        "start_line": 26
                                     },
                                     "While handling return value of"
                                 ],
@@ -2562,12 +2588,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling return value of"
                         ],
@@ -2593,12 +2619,12 @@
                         "parent_location": [
                             {
                                 "end_col": 18,
-                                "end_line": 29,
+                                "end_line": 30,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 9,
-                                "start_line": 29
+                                "start_line": 30
                             },
                             "While handling return value 'res'"
                         ],
@@ -2624,7 +2650,7 @@
                         "parent_location": [
                             {
                                 "end_col": 18,
-                                "end_line": 29,
+                                "end_line": 30,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -2638,12 +2664,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While handling return value of"
                                         ],
@@ -2653,7 +2679,7 @@
                                     "While expanding the reference '__return_value_ptr' in:"
                                 ],
                                 "start_col": 9,
-                                "start_line": 29
+                                "start_line": 30
                             },
                             "While handling return value 'res'"
                         ],
@@ -2679,7 +2705,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -2693,12 +2719,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While handling return value of"
                                         ],
@@ -2708,7 +2734,7 @@
                                     "While expanding the reference 'range_check_ptr' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling return value of"
                         ],
@@ -2734,12 +2760,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling return value of"
                         ],
@@ -2765,7 +2791,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -2779,12 +2805,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While handling return value of"
                                         ],
@@ -2794,7 +2820,7 @@
                                     "While expanding the reference '__return_value_ptr_start' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling return value of"
                         ],
@@ -2820,12 +2846,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling return value of"
                         ],
@@ -2851,12 +2877,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While handling calldata of"
                         ],
@@ -2882,7 +2908,7 @@
                         "parent_location": [
                             {
                                 "end_col": 23,
-                                "end_line": 26,
+                                "end_line": 27,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -2896,12 +2922,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -2911,7 +2937,7 @@
                                     "While expanding the reference 'syscall_ptr' in:"
                                 ],
                                 "start_col": 5,
-                                "start_line": 26
+                                "start_line": 27
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -2937,7 +2963,7 @@
                         "parent_location": [
                             {
                                 "end_col": 31,
-                                "end_line": 27,
+                                "end_line": 28,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -2951,12 +2977,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -2966,7 +2992,7 @@
                                     "While expanding the reference 'pedersen_ptr' in:"
                                 ],
                                 "start_col": 5,
-                                "start_line": 27
+                                "start_line": 28
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -2992,7 +3018,7 @@
                         "parent_location": [
                             {
                                 "end_col": 20,
-                                "end_line": 28,
+                                "end_line": 29,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3006,12 +3032,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3021,7 +3047,7 @@
                                     "While expanding the reference 'range_check_ptr' in:"
                                 ],
                                 "start_col": 5,
-                                "start_line": 28
+                                "start_line": 29
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3040,12 +3066,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 17,
-                        "end_line": 25,
+                        "end_line": 26,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                         },
                         "start_col": 6,
-                        "start_line": 25
+                        "start_line": 26
                     }
                 },
                 "97": {
@@ -3066,7 +3092,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3080,12 +3106,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3095,7 +3121,7 @@
                                     "While expanding the reference 'range_check_ptr' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3121,12 +3147,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3152,7 +3178,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3166,12 +3192,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3181,7 +3207,7 @@
                                     "While expanding the reference 'syscall_ptr' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3207,7 +3233,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3221,12 +3247,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3236,7 +3262,7 @@
                                     "While expanding the reference 'pedersen_ptr' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3262,7 +3288,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3276,12 +3302,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3291,7 +3317,7 @@
                                     "While expanding the reference 'range_check_ptr' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3317,7 +3343,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3331,12 +3357,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3346,7 +3372,7 @@
                                     "While expanding the reference 'retdata_size' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3372,7 +3398,7 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
@@ -3386,12 +3412,12 @@
                                         "parent_location": [
                                             {
                                                 "end_col": 17,
-                                                "end_line": 25,
+                                                "end_line": 26,
                                                 "input_file": {
                                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                                 },
                                                 "start_col": 6,
-                                                "start_line": 25
+                                                "start_line": 26
                                             },
                                             "While constructing the external wrapper for:"
                                         ],
@@ -3401,7 +3427,7 @@
                                     "While expanding the reference 'retdata' in:"
                                 ],
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3427,12 +3453,12 @@
                         "parent_location": [
                             {
                                 "end_col": 17,
-                                "end_line": 25,
+                                "end_line": 26,
                                 "input_file": {
                                     "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/contract.cairo"
                                 },
                                 "start_col": 6,
-                                "start_line": 25
+                                "start_line": 26
                             },
                             "While constructing the external wrapper for:"
                         ],
@@ -3479,6 +3505,23 @@
                     }
                 }
             ],
+            "51": [
+                {
+                    "accessible_scopes": [
+                        "__main__",
+                        "__main__",
+                        "__main__.increase_balance"
+                    ],
+                    "code": "print(\"hello\")",
+                    "flow_tracking_data": {
+                        "ap_tracking": {
+                            "group": 5,
+                            "offset": 23
+                        },
+                        "reference_ids": {}
+                    }
+                }
+            ],
             "67": [
                 {
                     "accessible_scopes": [
@@ -3494,6 +3537,25 @@
                             "offset": 52
                         },
                         "reference_ids": {}
+                    }
+                }
+            ],
+            "81": [
+                {
+                    "accessible_scopes": [
+                        "__main__",
+                        "__main__",
+                        "__main__.get_balance"
+                    ],
+                    "code": "print(f\"Printing {ids.res}\")",
+                    "flow_tracking_data": {
+                        "ap_tracking": {
+                            "group": 7,
+                            "offset": 23
+                        },
+                        "reference_ids": {
+                            "__main__.get_balance.res": 2
+                        }
                     }
                 }
             ],
@@ -3718,6 +3780,21 @@
             "__main__.get_balance.SIZEOF_LOCALS": {
                 "type": "const",
                 "value": 0
+            },
+            "__main__.get_balance.res": {
+                "cairo_type": "felt",
+                "full_name": "__main__.get_balance.res",
+                "references": [
+                    {
+                        "ap_tracking_data": {
+                            "group": 7,
+                            "offset": 23
+                        },
+                        "pc": 81,
+                        "value": "[cast(ap + (-1), felt*)]"
+                    }
+                ],
+                "type": "reference"
             },
             "__main__.increase_balance": {
                 "decorators": [
@@ -4868,6 +4945,14 @@
                     },
                     "pc": 8,
                     "value": "[cast(fp + (-5), felt**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 23
+                    },
+                    "pc": 81,
+                    "value": "[cast(ap + (-1), felt*)]"
                 }
             ]
         }

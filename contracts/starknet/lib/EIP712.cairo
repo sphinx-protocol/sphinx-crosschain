@@ -91,6 +91,8 @@ namespace EIP712 {
         MathUtils.assert_valid_uint256(salt);
 
         let voter_address = calldata[0];
+        let token_address = calldata[1];
+
         let (authenticator_address) = get_contract_address();
         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
 
@@ -103,22 +105,22 @@ namespace EIP712 {
         let (space) = MathUtils.felt_to_uint256(target);
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
+        let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
 
-        let (choice) = MathUtils.felt_to_uint256(calldata[1]);
+        // let (choice) = MathUtils.felt_to_uint256(calldata[1]);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
-        assert data[0] = Uint256(VOTE_TYPE_HASH_LOW, VOTE_TYPE_HASH_HIGH);
-        assert data[1] = auth_address_u256;
-        assert data[2] = space;
-        assert data[3] = voter_address_u256;
-        assert data[4] = choice;
-        assert data[5] = salt;
+        assert data[0] = auth_address_u256;
+        assert data[1] = space;
+        assert data[2] = voter_address_u256;
+        assert data[3] = token_address_u256;
+        assert data[4] = salt;
 
         let (local keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data);
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(5, data);
 
         // Prepare the encoded data
         let (prepared_encoded: Uint256*) = alloc();

@@ -16,6 +16,7 @@ func increase_balance{
     range_check_ptr,
 }(amount: felt) {
     let (res) = balance.read();
+    %{ print("hello") %}
     balance.write(res + amount);
     return ();
 }
@@ -28,5 +29,6 @@ func get_balance{
     range_check_ptr,
 }() -> (res: felt) {
     let (res) = balance.read();
+    %{ print(f"Printing {ids.res}") %}
     return (res=res);
 }
