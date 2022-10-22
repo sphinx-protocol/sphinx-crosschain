@@ -104,20 +104,7 @@ namespace EIP712 {
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
 
-        let (proposal_id) = MathUtils.felt_to_uint256(calldata[1]);
-        let (choice) = MathUtils.felt_to_uint256(calldata[2]);
-
-        let used_voting_strategies_len = calldata[3];
-        let used_voting_strategies = &calldata[4];
-        let (used_voting_strategies_hash) = _get_padded_hash(
-            used_voting_strategies_len, used_voting_strategies
-        );
-
-        let user_voting_strategy_params_flat_len = calldata[4 + used_voting_strategies_len];
-        let user_voting_strategy_params_flat = &calldata[5 + used_voting_strategies_len];
-        let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
-            user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
-        );
+        let (choice) = MathUtils.felt_to_uint256(calldata[1]);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
@@ -125,16 +112,13 @@ namespace EIP712 {
         assert data[1] = auth_address_u256;
         assert data[2] = space;
         assert data[3] = voter_address_u256;
-        assert data[4] = proposal_id;
-        assert data[5] = choice;
-        assert data[6] = used_voting_strategies_hash;
-        assert data[7] = user_voting_strategy_params_flat_hash;
-        assert data[8] = salt;
+        assert data[4] = choice;
+        assert data[5] = salt;
 
         let (local keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(9, data);
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data);
 
         // Prepare the encoded data
         let (prepared_encoded: Uint256*) = alloc();
@@ -166,6 +150,110 @@ namespace EIP712 {
         EIP712_salts.write(voter_address, salt, 1);
         return ();
     }
+    
+    // // @dev Asserts that a signature to cast a vote is valid
+    // // @param r Signature parameter
+    // // @param s Signature parameter
+    // // @param v Signature parameter
+    // // @param salt Signature salt
+    // // @param target Address of the space contract where the user is casting a vote
+    // // @param calldata Vote calldata
+    // func verify_signed_message{
+    //     syscall_ptr: felt*,
+    //     pedersen_ptr: HashBuiltin*,
+    //     range_check_ptr,
+    //     bitwise_ptr: BitwiseBuiltin*,
+    // }(
+    //     r: Uint256,
+    //     s: Uint256,
+    //     v: felt,
+    //     salt: Uint256,
+    //     target: felt,
+    //     calldata_len: felt,
+    //     calldata: felt*,
+    // ) {
+    //     alloc_locals;
+
+    //     MathUtils.assert_valid_uint256(r);
+    //     MathUtils.assert_valid_uint256(s);
+    //     MathUtils.assert_valid_uint256(salt);
+
+    //     let voter_address = calldata[0];
+    //     let (authenticator_address) = get_contract_address();
+    //     let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
+
+    //     // Ensure voter has not already used this salt in a previous action
+    //     let (already_used) = EIP712_salts.read(voter_address, salt);
+    //     with_attr error_message("EIP712: Salt already used") {
+    //         assert already_used = 0;
+    //     }
+
+    //     let (space) = MathUtils.felt_to_uint256(target);
+
+    //     let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
+
+    //     let (proposal_id) = MathUtils.felt_to_uint256(calldata[1]);
+    //     let (choice) = MathUtils.felt_to_uint256(calldata[2]);
+
+    //     let used_voting_strategies_len = calldata[3];
+    //     let used_voting_strategies = &calldata[4];
+    //     let (used_voting_strategies_hash) = _get_padded_hash(
+    //         used_voting_strategies_len, used_voting_strategies
+    //     );
+
+    //     let user_voting_strategy_params_flat_len = calldata[4 + used_voting_strategies_len];
+    //     let user_voting_strategy_params_flat = &calldata[5 + used_voting_strategies_len];
+    //     let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
+    //         user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
+    //     );
+
+    //     // Now construct the data hash (hashStruct)
+    //     let (data: Uint256*) = alloc();
+    //     assert data[0] = Uint256(VOTE_TYPE_HASH_LOW, VOTE_TYPE_HASH_HIGH);
+    //     assert data[1] = auth_address_u256;
+    //     assert data[2] = space;
+    //     assert data[3] = voter_address_u256;
+    //     assert data[4] = proposal_id;
+    //     assert data[5] = choice;
+    //     assert data[6] = used_voting_strategies_hash;
+    //     assert data[7] = user_voting_strategy_params_flat_hash;
+    //     assert data[8] = salt;
+
+    //     let (local keccak_ptr: felt*) = alloc();
+    //     let keccak_ptr_start = keccak_ptr;
+
+    //     let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(9, data);
+
+    //     // Prepare the encoded data
+    //     let (prepared_encoded: Uint256*) = alloc();
+    //     assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+    //     assert prepared_encoded[1] = hash_struct;
+
+    //     // Prepend the ethereum prefix
+    //     let (encoded_data: Uint256*) = alloc();
+    //     _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+
+    //     // Now go from Uint256s to Uint64s (required in order to call `keccak`)
+    //     let (signable_bytes) = alloc();
+    //     let signable_bytes_start = signable_bytes;
+    //     keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+
+    //     // Compute the hash
+    //     let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+    //         inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+    //     );
+
+    //     // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+    //     // We substract `27` because `v` = `{0, 1} + 27`
+    //     verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, voter_address);
+
+    //     // Verify that all the previous keccaks are correct
+    //     finalize_keccak(keccak_ptr_start, keccak_ptr);
+
+    //     // Write the salt to prevent replay attack
+    //     EIP712_salts.write(voter_address, salt, 1);
+    //     return ();
+    // }
 
     // @dev Asserts that a signature to cast a vote is valid
     // @param r Signature parameter
@@ -709,4 +797,5 @@ func _get_padded_hash{range_check_ptr, pedersen_ptr: HashBuiltin*}(
     let (padded_hash) = _pad_right(hash_u256);
 
     return (res=padded_hash);
+}
 }

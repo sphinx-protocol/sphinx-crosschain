@@ -39,10 +39,6 @@
                 "type": "felt"
             },
             {
-                "name": "function_selector",
-                "type": "felt"
-            },
-            {
                 "name": "calldata_len",
                 "type": "felt"
             },
