@@ -39,6 +39,13 @@ func notify_L1_remote_contract{
 # Consume from remote Ethereum deposit contract
 
 @l1_handler
-func consume_l1_remote_contract{
-    syscall_ptr: felt
+func receive_from_l1{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(from_address: felt, user_address: felt, token_address: felt, amount: felt, block_number: felt) {
+    // Make sure the message was sent by the intended L1 contract.
+    assert from_address = L1_CONTRACT_ADDRESS;
+
+    // TODO: hash the inputs and verify no double deposit
 }
