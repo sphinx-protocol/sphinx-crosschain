@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: MIT
+// @title EIP712 Library
+// @author Stark X - Remi
+// @reference: The code was inspired from the Snapshot X EIP 712 implementation. Source: https://github.com/snapshot-labs/sx-core/blob/05e0b1be3000d91d263fe85069f1bf571d4a5767/contracts/starknet/lib/eip712.cairo
+// @notice A library for verifying Ethereum EIP712 signatures on typed data
+// @dev Refer to the official EIP for more information: https://eips.ethereum.org/EIPS/eip-712
 
 %lang starknet
 
@@ -24,13 +29,6 @@ from starkware.cairo.common.uint256 import (
 
 from contracts.starknet.lib.math_utils import MathUtils
 from contracts.starknet.lib.array_utils import ArrayUtils
-
-//
-// @title EIP712 Library
-// @author SnapshotLabs
-// @notice A library for verifying Ethereum EIP712 signatures on typed data required for Snapshot X
-// @dev Refer to the official EIP for more information: https://eips.ethereum.org/EIPS/eip-712
-//
 
 const ETHEREUM_PREFIX = 0x1901;
 
@@ -80,7 +78,6 @@ namespace EIP712 {
         MathUtils.assert_valid_uint256(r);
         MathUtils.assert_valid_uint256(s);
         MathUtils.assert_valid_uint256(salt);
-        // MathUtils.assert_valid_uint256(amount);
 
         let voter_address = calldata[0];
         let token_address = calldata[1];
@@ -101,14 +98,6 @@ namespace EIP712 {
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
         let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
-
-        // let (amount_u256) = MathUtils.felt_to_uint256(amount);
-        %{ print("Remi") %}
-        %{ print(ids.amount_u256.low) %}
-        %{ print(ids.amount_u256.high) %}
-        %{ print(ids.strategy_u256.low) %}
-        %{ print(ids.strategy_u256.high) %}
-        // let (choice) = MathUtils.felt_to_uint256(calldata[1]);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
@@ -208,98 +197,5 @@ func _get_keccak_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr:
     let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(uint256_words_len, uint256_words);
 
     return (hash,);
-}
-
-// Returns the number of digits needed to represent `num` in hexadecimal.
-// Similar to doing `len(hex(num)[2:])` in Python.
-// E.g.:
-// - `0x123` will return `3`
-// - `0x1` will return `1`
-// - `0xa3b1d4` will return `6`
-// Notice: Will not work for `0x0` (will return `0` for `0x0` instead of `1`).
-func _get_base16_len{range_check_ptr}(num: Uint256) -> (res: felt) {
-    let (is_eq) = uint256_eq(num, Uint256(0, 0));
-    if (is_eq == 1) {
-        return (0,);
-    } else {
-        // Divide by 16
-        let (divided, _) = uint256_unsigned_div_rem(num, Uint256(16, 0));
-
-        let (res_len) = _get_base16_len(divided);
-        return (res_len + 1,);
-    }
-}
-
-// Computes `base ** exp` where `base` and `exp` are both `felts` and returns the result as a `Uint256`.
-func _u256_pow{range_check_ptr}(base: felt, exp: felt) -> (res: Uint256) {
-    alloc_locals;
-
-    if (exp == 0) {
-        // Any number to the power of 0 is 1
-        return (Uint256(1, 0),);
-    } else {
-        // Compute `base ** exp - 1`
-        let (recursion) = _u256_pow(base, exp - 1);
-
-        let (uint256_base) = MathUtils.felt_to_uint256(base);
-
-        // Multiply the result by `base`
-        let (res, overflow) = uint256_mul(recursion, uint256_base);
-
-        with_attr error_message("EIP712: Overflow happened") {
-            let (no_overflow) = uint256_eq(overflow, Uint256(0, 0));
-            assert no_overflow = 1;
-        }
-
-        return (res,);
-    }
-}
-
-// Right pads `num` with `0` to make it 32 bytes long.
-// E.g:
-// - right_pad(0x1)  -> (0x0100000000000000000000000000000000000000000000000000000000000000)
-// - right_pad(0xaa) -> (0xaa00000000000000000000000000000000000000000000000000000000000000)
-func _pad_right{range_check_ptr}(num: Uint256) -> (res: Uint256) {
-    let (len_base16) = _get_base16_len(num);
-
-    let (_, rem) = unsigned_div_rem(len_base16, 2);
-    if (rem == 1) {
-        // Odd-length: add one (a byte is two characters long)
-        tempvar len_base16 = len_base16 + 1;
-    } else {
-        tempvar len_base16 = len_base16;
-    }
-
-    let base = 16;
-    let exp = 64 - len_base16;
-    let (power_16) = _u256_pow(base, exp);
-
-    // Left shift
-    let (low, high) = uint256_mul(num, power_16);
-
-    with_attr error_message("EIP712: Overflow happened") {
-        assert high.low = 0;
-        assert high.high = 0;
-    }
-
-    return (low,);
-}
-
-func _keccak_ints_sequence{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
-    nb_bytes: felt, sequence_len: felt, sequence: felt*
-) -> (res: Uint256) {
-    return keccak_bigend(inputs=sequence, n_bytes=nb_bytes);
-}
-
-func _get_padded_hash{range_check_ptr, pedersen_ptr: HashBuiltin*}(
-    input_len: felt, input: felt*
-) -> (res: Uint256) {
-    alloc_locals;
-
-    let (hash) = ArrayUtils.hash(input_len, input);
-    let (hash_u256) = MathUtils.felt_to_uint256(hash);
-    let (padded_hash) = _pad_right(hash_u256);
-
-    return (res=padded_hash);
 }
 }
