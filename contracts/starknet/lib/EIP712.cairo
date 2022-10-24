@@ -41,6 +41,11 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x8aba6bf30572474cf5acb579ce4c27aa;
 const DOMAIN_HASH_LOW = 0x01d7dbffc7a8de3d601367229ba8a687;
 
+// keccak256("Order(bytes32 authenticator,bytes32 space,address author,address token,uint256 salt)")
+// c38ddd327e79ff58e23411c8ce7976ba5a48a34e4bff1a3fa7e6a951ed4ed85c
+const ORDER_TYPE_HASH_HIGH = 0xc38ddd327e79ff58e23411c8ce7976ba;
+const ORDER_TYPE_HASH_LOW = 0x5a48a34e4bff1a3fa7e6a951ed4ed85c;
+
 // keccak256("Propose(bytes32 authenticator,bytes32 space,address author,string metadata_uri,bytes32 executor,bytes32 execution_hash,bytes32 strategies_hash,bytes32 strategies_params_hash,uint256 salt)")
 const PROPOSAL_TYPE_HASH_HIGH = 0x53ca73f14c436dd8e4088b71987f1dad;
 const PROPOSAL_TYPE_HASH_LOW = 0x4187b44b32f86ed0ba765a166eaa687e;
@@ -94,7 +99,10 @@ namespace EIP712 {
         let token_address = calldata[1];
 
         let (authenticator_address) = get_contract_address();
+        %{ print(ids.authenticator_address)%}
         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
+        %{ print(ids.auth_address_u256.low)%}
+        %{ print(ids.auth_address_u256.high)%}
 
         // Ensure voter has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(voter_address, salt);
@@ -111,16 +119,25 @@ namespace EIP712 {
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
-        assert data[0] = auth_address_u256;
-        assert data[1] = space;
-        assert data[2] = voter_address_u256;
-        assert data[3] = token_address_u256;
-        assert data[4] = salt;
+        assert data[0] = Uint256(ORDER_TYPE_HASH_LOW, ORDER_TYPE_HASH_HIGH);
+        assert data[1] = auth_address_u256;
+        assert data[2] = space;
+        assert data[3] = voter_address_u256;
+        assert data[4] = token_address_u256;
+        assert data[5] = salt;
+
+        %{ print("Remi") %}
+        %{ print(ids.data) %}
+        // %{ print(f"Auth {ids.auth_address_u256}") %}
+        // %{ print(f"Space {ids.space}") %}
+        // %{ print(f"Voter {ids.voter_address_u256}") %}
+        // %{ print(f"Token {ids.token_address_u256}") %}
+        // %{ print(f"Salt {ids.salt}") %}
 
         let (local keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(5, data);
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data);
 
         // Prepare the encoded data
         let (prepared_encoded: Uint256*) = alloc();
