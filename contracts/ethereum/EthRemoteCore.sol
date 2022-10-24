@@ -7,9 +7,6 @@ import "./IERC20.sol";
  * @dev Interface for StarkNet core contract, used to consume messages passed from L2 to L1.
  */
 interface IStarknetCore {
-    /**
-     * @dev Consumes a message that was sent from an L2 contract. Returns the hash of the message.
-     */
     function consumeMessageFromL2(
         uint256 fromAddress,
         uint256[] calldata payload
@@ -39,6 +36,7 @@ contract EthRemoteCore{
     proverAddressIsSet = true;
   }
 
+  // Note: this logic assumes that the messaging layer will never fail.
   function remoteDepositAccount(uint256 toAddress, uint256 selector, address tokenAddress, uint256 amount) external {
     require(proverAddressIsSet, "No prover");
     IERC20(tokenAddress).transfer(address(this), amount);
@@ -52,6 +50,7 @@ contract EthRemoteCore{
     starknetCore.sendMessageToL2(toAddress, selector, payload);
   }
   
+  // Note: this logic assumes that the messaging layer will never fail.
   function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress) external {
     require(proverAddressIsSet, "No prover");
 
@@ -70,5 +69,3 @@ contract EthRemoteCore{
     IERC20(convertedTokendAddress).transfer(convertedUserAddress, amount);
   }
 }
-
-// Notes: this logic assumes that the messaging layer will never fail.
