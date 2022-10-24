@@ -21,11 +21,11 @@ interface IStarknetCore {
 
 contract EthRemoteCore{
   address public owner;
-  uint256 public l2StorageProverAddress;
   bool public proverAddressIsSet = false;
+  uint256 public l2StorageProverAddress;
   uint256 public SUBMIT_L1_BLOCKHASH_SELECTOR = 598342674068027518481179578557554850038206119856216505601406522348670006916;
   mapping (bytes32 => bool) public nullifiers;
-  IStarknetCore starknetCore;
+  IStarknetCore public starknetCore;
   
   constructor(IStarknetCore _starknetCore) {
     starknetCore = _starknetCore;

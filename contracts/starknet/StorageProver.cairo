@@ -9,6 +9,10 @@ from starkware.starknet.common.messages import send_message_to_l1
 func log_notify_L1_contract(user_address : felt, token_address: felt, amount: felt, block_number: felt){
 }
 
+@storage_var
+func nullifiers(nullifier : felt) -> (exist : felt){
+}
+
 # Notify remote Ethereum withdrawal contract
 func notify_L1_remote_contract{
     syscall_ptr : felt*,
@@ -47,5 +51,28 @@ func receive_from_l1{
     // Make sure the message was sent by the intended L1 contract.
     assert from_address = L1_CONTRACT_ADDRESS;
 
-    // TODO: hash the inputs and verify no double deposit
+    let (payload_data : felt*) = alloc();
+    assert payload_data[0] = user_address;
+    assert payload_data[1] = token_address;
+    assert payload_data[2] = amount;
+    assert payload_data[3] = block_number;
+
+    let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(8, data);
+    let (exist) = nullifiers.read(nullifier);
+
+    // prevent double deposit
+    if exist == 1 {
+        return ();
+    }
+
+    nullifiers.write(nullifier, 1);
+
+    // TODO: fund tokens to account
+}
+
+func _get_keccak_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+    uint256_words_len: felt, uint256_words: Uint256*
+) -> (hash: Uint256) {
+        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(uint256_words_len, uint256_words);
+        return (hash,);
 }

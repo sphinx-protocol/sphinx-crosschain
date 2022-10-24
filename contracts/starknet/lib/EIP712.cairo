@@ -146,56 +146,56 @@ namespace EIP712 {
         return ();
     }
 
-// Adds a 2 bytes (16 bits) `prefix` to a 16 bytes (128 bits) `value`.
-func _add_prefix128{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(value: felt, prefix: felt) -> (
-    result: felt, carry: felt
-) {
-    // Shift the prefix by 128 bits
-    let shifted_prefix = prefix * 2 ** 128;
-    // `with_prefix` is now 18 bytes long
-    let with_prefix = shifted_prefix + value;
-    // Create 2 bytes mask
-    let overflow_mask = 2 ** 16 - 1;
-    // Extract the last two bytes of `with_prefix`
-    let (carry) = bitwise_and(with_prefix, overflow_mask);
-    // Compute the new number, right shift by 16
-    let result = (with_prefix - carry) / 2 ** 16;
-    return (result, carry);
-}
-
-// Concatenates a 2 bytes long `prefix` and `input` to `output`.
-// `input_len` is the number of `Uint256` in `input`.
-func _prepend_prefix_2bytes{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    prefix: felt, output: Uint256*, input_len: felt, input: Uint256*
-) {
-    if (input_len == 0) {
-        // Done, simlpy store the prefix in the `.high` part of the last Uint256, and
-        // make sure we left shift it by 28 (32 - 4)
-        assert output[0] = Uint256(0, prefix * 16 ** 28);
-        return ();
-    } else {
-        let num = input[0];
-
-        let (w1, high_carry) = _add_prefix128(num.high, prefix);
-        let (w0, low_carry) = _add_prefix128(num.low, high_carry);
-
-        let res = Uint256(w0, w1);
-        assert output[0] = res;
-
-        // Recurse, using the `low_carry` as `prefix`
-        _prepend_prefix_2bytes(low_carry, &output[1], input_len - 1, &input[1]);
-        return ();
+    // Adds a 2 bytes (16 bits) `prefix` to a 16 bytes (128 bits) `value`.
+    func _add_prefix128{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(value: felt, prefix: felt) -> (
+        result: felt, carry: felt
+    ) {
+        // Shift the prefix by 128 bits
+        let shifted_prefix = prefix * 2 ** 128;
+        // `with_prefix` is now 18 bytes long
+        let with_prefix = shifted_prefix + value;
+        // Create 2 bytes mask
+        let overflow_mask = 2 ** 16 - 1;
+        // Extract the last two bytes of `with_prefix`
+        let (carry) = bitwise_and(with_prefix, overflow_mask);
+        // Compute the new number, right shift by 16
+        let result = (with_prefix - carry) / 2 ** 16;
+        return (result, carry);
     }
-}
 
-// Computes the `keccak256` hash from an array of `Uint256`. Does NOT call `finalize_keccak`,
-// so the caller needs to make she calls `finalize_keccak` on the `keccak_ptr` once she's done
-// with it.
-func _get_keccak_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
-    uint256_words_len: felt, uint256_words: Uint256*
-) -> (hash: Uint256) {
-    let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(uint256_words_len, uint256_words);
+    // Concatenates a 2 bytes long `prefix` and `input` to `output`.
+    // `input_len` is the number of `Uint256` in `input`.
+    func _prepend_prefix_2bytes{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
+        prefix: felt, output: Uint256*, input_len: felt, input: Uint256*
+    ) {
+        if (input_len == 0) {
+            // Done, simlpy store the prefix in the `.high` part of the last Uint256, and
+            // make sure we left shift it by 28 (32 - 4)
+            assert output[0] = Uint256(0, prefix * 16 ** 28);
+            return ();
+        } else {
+            let num = input[0];
 
-    return (hash,);
-}
+            let (w1, high_carry) = _add_prefix128(num.high, prefix);
+            let (w0, low_carry) = _add_prefix128(num.low, high_carry);
+
+            let res = Uint256(w0, w1);
+            assert output[0] = res;
+
+            // Recurse, using the `low_carry` as `prefix`
+            _prepend_prefix_2bytes(low_carry, &output[1], input_len - 1, &input[1]);
+            return ();
+        }
+    }
+
+    // Computes the `keccak256` hash from an array of `Uint256`. Does NOT call `finalize_keccak`,
+    // so the caller needs to make she calls `finalize_keccak` on the `keccak_ptr` once she's done
+    // with it.
+    func _get_keccak_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+        uint256_words_len: felt, uint256_words: Uint256*
+    ) -> (hash: Uint256) {
+        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(uint256_words_len, uint256_words);
+
+        return (hash,);
+    }
 }
