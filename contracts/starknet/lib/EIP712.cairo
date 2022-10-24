@@ -41,10 +41,10 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x8aba6bf30572474cf5acb579ce4c27aa;
 const DOMAIN_HASH_LOW = 0x01d7dbffc7a8de3d601367229ba8a687;
 
-// keccak256("Order(bytes32 authenticator,bytes32 space,address author,address token,uint256 salt)")
+// keccak256("Order(bytes32 authenticator,bytes32 space,address author,address token,uint256 amount,uint256 strategy,uint256 salt)")
 // c38ddd327e79ff58e23411c8ce7976ba5a48a34e4bff1a3fa7e6a951ed4ed85c
-const ORDER_TYPE_HASH_HIGH = 0xc38ddd327e79ff58e23411c8ce7976ba;
-const ORDER_TYPE_HASH_LOW = 0x5a48a34e4bff1a3fa7e6a951ed4ed85c;
+const ORDER_TYPE_HASH_HIGH = 0xb68d779110a8a297baab6c5d1e8530f4;
+const ORDER_TYPE_HASH_LOW = 0x9f9d6a0f48adcb7080bb9c2c49ea5971;
 
 // keccak256("Propose(bytes32 authenticator,bytes32 space,address author,string metadata_uri,bytes32 executor,bytes32 execution_hash,bytes32 strategies_hash,bytes32 strategies_params_hash,uint256 salt)")
 const PROPOSAL_TYPE_HASH_HIGH = 0x53ca73f14c436dd8e4088b71987f1dad;
@@ -81,11 +81,14 @@ namespace EIP712 {
         range_check_ptr,
         bitwise_ptr: BitwiseBuiltin*,
     }(
+        amount: felt,
+        strategy: felt,
         r: Uint256,
         s: Uint256,
         v: felt,
         salt: Uint256,
         target: felt,
+        // amount: Uint256,
         calldata_len: felt,
         calldata: felt*,
     ) {
@@ -94,15 +97,14 @@ namespace EIP712 {
         MathUtils.assert_valid_uint256(r);
         MathUtils.assert_valid_uint256(s);
         MathUtils.assert_valid_uint256(salt);
+        // MathUtils.assert_valid_uint256(amount);
 
         let voter_address = calldata[0];
         let token_address = calldata[1];
+        // let amount = calldata[2];
 
         let (authenticator_address) = get_contract_address();
-        %{ print(ids.authenticator_address)%}
         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
-        %{ print(ids.auth_address_u256.low)%}
-        %{ print(ids.auth_address_u256.high)%}
 
         // Ensure voter has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(voter_address, salt);
@@ -111,10 +113,18 @@ namespace EIP712 {
         }
 
         let (space) = MathUtils.felt_to_uint256(target);
+        let (amount_u256) = MathUtils.felt_to_uint256(amount);
+        let (strategy_u256) = MathUtils.felt_to_uint256(strategy);
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
         let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
 
+        // let (amount_u256) = MathUtils.felt_to_uint256(amount);
+        %{ print("Remi") %}
+        %{ print(ids.amount_u256.low) %}
+        %{ print(ids.amount_u256.high) %}
+        %{ print(ids.strategy_u256.low) %}
+        %{ print(ids.strategy_u256.high) %}
         // let (choice) = MathUtils.felt_to_uint256(calldata[1]);
 
         // Now construct the data hash (hashStruct)
@@ -124,20 +134,14 @@ namespace EIP712 {
         assert data[2] = space;
         assert data[3] = voter_address_u256;
         assert data[4] = token_address_u256;
-        assert data[5] = salt;
-
-        %{ print("Remi") %}
-        %{ print(ids.data) %}
-        // %{ print(f"Auth {ids.auth_address_u256}") %}
-        // %{ print(f"Space {ids.space}") %}
-        // %{ print(f"Voter {ids.voter_address_u256}") %}
-        // %{ print(f"Token {ids.token_address_u256}") %}
-        // %{ print(f"Salt {ids.salt}") %}
+        assert data[5] = amount_u256;
+        assert data[6] = strategy_u256;
+        assert data[7] = salt;
 
         let (local keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data);
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(8, data);
 
         // Prepare the encoded data
         let (prepared_encoded: Uint256*) = alloc();

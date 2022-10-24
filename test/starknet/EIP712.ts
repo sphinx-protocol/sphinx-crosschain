@@ -29,65 +29,13 @@ describe("EthSigAuth", function () {
         controller = (await starknet.deployAccount('OpenZeppelin'));
         EthSigAuth = await starknet.getContractFactory("EthSig");
         ethSigAuth = await EthSigAuth.deploy();
+        console.log("deployed");
     });
 
     it("should validate an ethereum signature", async function () {
         const accounts = await ethers.getSigners();
         const salt: utils.splitUint256.SplitUint256 = utils.splitUint256.SplitUint256.fromHex('0x1');
-        // All properties on a domain are optional
-        // const domain = {
-        //     name: 'snapshot-x',
-        //     version: '1',
-        //     chainId: '5', // GOERLI
-        // };
-
-        // // The named list of all type definitions
-        // const proposeTypes = {
-        //     Propose: [
-        //       { name: 'authenticator', type: 'bytes32' },
-        //       { name: 'space', type: 'bytes32' },
-        //       { name: 'author', type: 'address' },
-        //       { name: 'metadata_uri', type: 'string' },
-        //       { name: 'executor', type: 'bytes32' },
-        //       { name: 'execution_hash', type: 'bytes32' },
-        //       { name: 'strategies_hash', type: 'bytes32' },
-        //       { name: 'strategies_params_hash', type: 'bytes32' },
-        //       { name: 'salt', type: 'uint256' },
-        //     ],
-        // };
-
-        // const message: any = {
-        //     authenticator: ethSigAuth.address,
-        //     space: spaceStr,
-        //     author: proposerEthAddress,
-        //     metadata_uri: METADATA_URI,
-        //     executor: paddedExecutor,
-        //     execution_hash: executionHashPadded,
-        //     strategies_hash: usedVotingStrategiesHashPadded1,
-        //     strategies_params_hash: userVotingStrategyParamsFlatHashPadded1,
-        //     salt: salt.toHex(),
-        // };
-
-        // const proposeCalldata = utils.encoding.getProposeCalldata(
-        //     proposerEthAddress,
-        //     metadataUriInts,
-        //     executionStrategy,
-        //     usedVotingStrategies1,
-        //     userVotingParamsAll1,
-        //     executionParams
-        // );
-
-        // const sig = await accounts[0]._signTypedData(domain, proposeTypes, message);
-        // const { r, s, v } = utils.encoding.getRSVFromSig(sig);
-
-        // await controller.invoke(ethSigAuth, 'authenticate', {
-        //     r: r,
-        //     s: s,
-        //     v: v,
-        //     salt: salt,
-        //     target: spaceAddress,
-        //     calldata: fakeData,
-        // });
+        const amount: utils.splitUint256.SplitUint256 = utils.splitUint256.SplitUint256.fromHex('0x3E8');
 
         const space = "0x0000000000000000000000000000000000000001";
         const author = accounts[0].address;
@@ -105,6 +53,8 @@ describe("EthSigAuth", function () {
               { name: 'space', type: 'bytes32' },
               { name: 'author', type: 'address' },
               { name: 'token', type: 'address' },
+              { name: 'amount', type: 'uint256' },
+              { name: 'strategy', type: 'uint256' },
               { name: 'salt', type: 'uint256' },
             ],
         };
@@ -115,6 +65,9 @@ describe("EthSigAuth", function () {
             space: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
             author: author,
             token: accounts[1].address, // token address
+            // amount: amount.toHex(),
+            amount: 1000,
+            strategy: 1,
             salt: salt.toHex(),
         };
 
@@ -126,6 +79,7 @@ describe("EthSigAuth", function () {
         const proposeCalldata = [
             author,
             accounts[1].address, // execution strategy
+            // 1000,
         ];
 
         console.log("proposeCalldata", proposeCalldata);
@@ -144,7 +98,11 @@ describe("EthSigAuth", function () {
         const sig = await accounts[0]._signTypedData(domain, proposeTypes, message);
         const { r, s, v } = utils.encoding.getRSVFromSig(sig);
 
+        console.log("salt", salt);
+
         await controller.invoke(ethSigAuth, 'authenticate', {
+            amount: 1000,
+            strategy: 1,
             r: r,
             s: s,
             v: v,

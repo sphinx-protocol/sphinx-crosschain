@@ -35,6 +35,8 @@ from contracts.starknet.lib.math_utils import MathUtils
 func authenticate{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(
+    amount: felt,
+    strategy: felt,
     r: Uint256,
     s: Uint256,
     v: felt,
@@ -43,6 +45,6 @@ func authenticate{
     calldata_len: felt,
     calldata: felt*,
 ) -> () {
-    EIP712.verify_signed_message(r, s, v, salt, target, calldata_len, calldata);
+    EIP712.verify_signed_message(amount, strategy, r, s, v, salt, target, calldata_len, calldata);
     return ();
 }

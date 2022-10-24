@@ -19,6 +19,14 @@
     {
         "inputs": [
             {
+                "name": "amount",
+                "type": "felt"
+            },
+            {
+                "name": "strategy",
+                "type": "felt"
+            },
+            {
                 "name": "r",
                 "type": "Uint256"
             },
