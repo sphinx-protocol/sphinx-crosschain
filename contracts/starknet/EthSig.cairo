@@ -41,10 +41,10 @@ func authenticate{
     s: Uint256,
     v: felt,
     salt: Uint256,
-    target: felt,
+    market: felt,
     calldata_len: felt,
     calldata: felt*,
 ) -> () {
-    EIP712.verify_signed_message(amount, strategy, r, s, v, salt, target, calldata_len, calldata);
+    EIP712.verify_signed_message(amount, strategy, r, s, v, salt, market, calldata_len, calldata);
     return ();
 }

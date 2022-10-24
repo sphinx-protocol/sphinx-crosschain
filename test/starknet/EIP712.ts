@@ -37,7 +37,6 @@ describe("EthSigAuth", function () {
         const salt: utils.splitUint256.SplitUint256 = utils.splitUint256.SplitUint256.fromHex('0x1');
         const amount: utils.splitUint256.SplitUint256 = utils.splitUint256.SplitUint256.fromHex('0x3E8');
 
-        const space = "0x0000000000000000000000000000000000000001";
         const author = accounts[0].address;
 
         const domain = {
@@ -50,7 +49,7 @@ describe("EthSigAuth", function () {
         const proposeTypes = {
             Order: [
               { name: 'authenticator', type: 'bytes32' },
-              { name: 'space', type: 'bytes32' },
+              { name: 'market', type: 'bytes32' },
               { name: 'author', type: 'address' },
               { name: 'token', type: 'address' },
               { name: 'amount', type: 'uint256' },
@@ -62,7 +61,7 @@ describe("EthSigAuth", function () {
         const message: any = {
             authenticator: ethSigAuth.address,
             // space: utils.encoding.hexPadRight("0x0000000000000000000000000000000000000001"),
-            space: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+            market: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
             author: author,
             token: accounts[1].address, // token address
             // amount: amount.toHex(),
@@ -107,7 +106,7 @@ describe("EthSigAuth", function () {
             s: s,
             v: v,
             salt: salt,
-            target: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+            market: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
             calldata: proposeCalldata,
         });
     });
