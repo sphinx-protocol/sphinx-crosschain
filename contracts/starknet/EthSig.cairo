@@ -45,6 +45,7 @@ func authenticate{
     calldata_len: felt,
     calldata: felt*,
 ) -> () {
+    // verify the signature
     EIP712.verify_signed_message(amount, strategy, r, s, v, salt, market, calldata_len, calldata);
     // TODO: execute the strategy
     return ();

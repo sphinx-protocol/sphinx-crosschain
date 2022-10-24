@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, starknet } from "hardhat";
+import { ethers, starknet, config } from "hardhat";
 import { StarknetContract, Account } from 'hardhat/types';
 import { utils } from '@snapshot-labs/sx';
 
@@ -44,8 +44,8 @@ describe("EthSigAuth", function () {
         const message: any = {
             authenticator: ethSigAuth.address,
             market: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
-            author: author,
-            token: accounts[1].address, // token address
+            author: author, // author
+            token: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // token address
             amount: 1000,
             strategy: 1,
             salt: salt.toHex(),
@@ -55,15 +55,17 @@ describe("EthSigAuth", function () {
 
         const proposeCalldata = [
             author,
-            accounts[1].address, // token_address
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // token_address
         ];
 
         console.log("proposeCalldata", proposeCalldata);
-
         const sig = await accounts[0]._signTypedData(domain, proposeTypes, message);
+        console.log("sig", sig);
+        console.log("account", accounts[0].address);
         const { r, s, v } = utils.encoding.getRSVFromSig(sig);
-
-        console.log("salt", salt);
+        console.log("r", r);
+        console.log("s", s);
+        console.log("v", v);
 
         await controller.invoke(ethSigAuth, 'authenticate', {
             amount: 1000,

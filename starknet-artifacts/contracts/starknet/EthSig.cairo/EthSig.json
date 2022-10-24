@@ -61267,12 +61267,12 @@
                     "hints": [],
                     "inst": {
                         "end_col": 15,
-                        "end_line": 49,
+                        "end_line": 50,
                         "input_file": {
                             "filename": "/Users/remigai/Documents/web3.nosync/starkx/contracts/starknet/EthSig.cairo"
                         },
                         "start_col": 5,
-                        "start_line": 49
+                        "start_line": 50
                     }
                 },
                 "3090": {
