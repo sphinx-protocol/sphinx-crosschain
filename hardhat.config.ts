@@ -30,6 +30,11 @@ const config: HardhatUserConfig = {
         devnet: {
             url: "http://127.0.0.1:5050"
         },
+        goerli: {
+          url: `https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+          chainId: 5,
+          accounts: [process.env.DEPLOYER_PRIVATE_KEY || ""],
+        },
         integratedDevnet: {
             url: "http://127.0.0.1:5050",
             args: ["--lite-mode"],

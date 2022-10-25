@@ -19,9 +19,10 @@ interface IStarknetCore {
     ) external payable returns (bytes32);
 }
 
-contract EthRemoteCore{
+contract DummyCore{
   address public owner;
   bool public proverAddressIsSet = false;
+  uint256 counter;
   uint256 public l2StorageProverAddress;
   uint256 public nonce;
   uint256 public SUBMIT_L1_BLOCKHASH_SELECTOR = 598342674068027518481179578557554850038206119856216505601406522348670006916;
@@ -32,6 +33,7 @@ contract EthRemoteCore{
     starknetCore = _starknetCore;
     owner = msg.sender;
     nonce = 0;
+    counter = 0;
   }
 
   function setProverAddress(uint256 _l2StorageProverAddress) external {
@@ -43,9 +45,6 @@ contract EthRemoteCore{
   // Note: this logic assumes that the messaging layer will never fail.
   // https://www.cairo-lang.org/docs/hello_starknet/l1l2.html
   function remoteDepositAccount(uint256 toAddress, address tokenAddress, uint256 amount) external payable {
-    require(proverAddressIsSet, "No prover");
-    IERC20(tokenAddress).transfer(address(this), amount);
-
     // Construct the L1 -> L2 message payload.
     uint256[] memory payload = new uint256[](4);
     payload[0] = uint160(msg.sender);
@@ -62,8 +61,6 @@ contract EthRemoteCore{
   
   // Note: this logic assumes that the messaging layer will never fail.
   function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress, uint256 nonce) external {
-    require(proverAddressIsSet, "No prover");
-
     // Construct the L2 -> L1 withdrawal message payload.
     uint256[] memory payload = new uint256[](3);
     payload[0] = userAddress;
@@ -74,14 +71,10 @@ contract EthRemoteCore{
     // Fails if message doesn't exist.
     starknetCore.consumeMessageFromL2(l2StorageProverAddress, payload);
 
-    address convertedUserAddress = address(uint160(userAddress));
-    address convertedTokendAddress = address(uint160(userAddress));
-
     // hash of payload is the nullifier to avoid double spending
     bytes32 nullifier = keccak256(abi.encodePacked(payload));
     require(!nullifiers[nullifier], "Double spend");
-
-    IERC20(convertedTokendAddress).transfer(convertedUserAddress, amount);
     nullifiers[nullifier] = true;
+    counter++;
   }
 }

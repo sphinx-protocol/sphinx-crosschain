@@ -22,6 +22,10 @@ func nonce() -> (nonce : felt){
 }
 
 @storage_var
+func counter() -> (counter : felt){
+}
+
+@storage_var
 func nullifiers(nullifier : Uint256) -> (exist : felt){
 }
 
@@ -32,6 +36,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     L1_gateway_address.write(_L1_gateway_address);
     return ();
 }
+
 
 func notify_L1_remote_contract{
     syscall_ptr : felt*,
@@ -73,8 +78,8 @@ func receive_from_l1{
     alloc_locals;
 
     // Make sure the message was sent by the intended L1 contract.
-    let (gateway_addr) = L1_gateway_address.read();
-    assert from_address = gateway_addr;
+    // let (gateway_addr) = L1_gateway_address.read();
+    // assert from_address = gateway_addr;
 
     let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
     let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
@@ -92,6 +97,9 @@ func receive_from_l1{
 
     let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(4, payload_data);
     let (exist) = nullifiers.read(nullifier);
+
+    let (currentCount) = counter.read();
+    counter.write(currentCount + 1);
 
     // prevent double deposit
     if (exist == 1) {
