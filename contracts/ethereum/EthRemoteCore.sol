@@ -50,7 +50,8 @@ contract EthRemoteCore{
     payload[1] = uint160(tokenAddress);
     payload[2] = amount;
     payload[3] = block.number;
-    
+    // create nonce instead
+
     // Pass in a message fee. 
     /// starknetSelector(receive_from_l1) 598342674068027518481179578557554850038206119856216505601406522348670006916
     starknetCore.sendMessageToL2{value: msg.value}(toAddress, SUBMIT_L1_BLOCKHASH_SELECTOR, payload);

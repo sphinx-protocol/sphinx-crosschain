@@ -39,10 +39,10 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x8aba6bf30572474cf5acb579ce4c27aa;
 const DOMAIN_HASH_LOW = 0x01d7dbffc7a8de3d601367229ba8a687;
 
-// keccak256("Order(bytes32 authenticator,bytes32 market,address author,address token,uint256 amount,uint256 strategy,uint256 salt)")
-// 0fc9ce93a2385496f0d00e24b97e37b254ae73d6c0b8153aff56d7baceca7561
-const ORDER_TYPE_HASH_HIGH = 0x0fc9ce93a2385496f0d00e24b97e37b2;
-const ORDER_TYPE_HASH_LOW = 0x54ae73d6c0b8153aff56d7baceca7561;
+// keccak256("Order(bytes32 authenticator,bytes32 market,address author,address token,uint256 amount,uint256 price,uint256 strategy,uint256 salt)")
+// d4eeb39eaeef500fca5d670228cd9e51e7509352df8ac73b20f027951362af4c
+const ORDER_TYPE_HASH_HIGH = 0xd4eeb39eaeef500fca5d670228cd9e51;
+const ORDER_TYPE_HASH_LOW = 0xe7509352df8ac73b20f027951362af4c;
 
 // @dev Signature salts store
 @storage_var
@@ -63,6 +63,7 @@ namespace EIP712 {
         range_check_ptr,
         bitwise_ptr: BitwiseBuiltin*,
     }(
+        price: felt,
         amount: felt,
         strategy: felt,
         r: Uint256,
@@ -94,6 +95,7 @@ namespace EIP712 {
 
         let (market_u256) = MathUtils.felt_to_uint256(market);
         let (amount_u256) = MathUtils.felt_to_uint256(amount);
+        let (price_u256) = MathUtils.felt_to_uint256(price);
         let (strategy_u256) = MathUtils.felt_to_uint256(strategy);
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
@@ -107,13 +109,14 @@ namespace EIP712 {
         assert data[3] = voter_address_u256;
         assert data[4] = token_address_u256;
         assert data[5] = amount_u256;
-        assert data[6] = strategy_u256;
-        assert data[7] = salt;
+        assert data[6] = price_u256;
+        assert data[7] = strategy_u256;
+        assert data[8] = salt;
 
         let (local keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(8, data);
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(9, data);
 
         // Prepare the encoded data
         let (prepared_encoded: Uint256*) = alloc();

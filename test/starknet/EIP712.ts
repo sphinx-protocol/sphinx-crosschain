@@ -36,6 +36,7 @@ describe("EthSigAuth", function () {
               { name: 'author', type: 'address' },
               { name: 'token', type: 'address' },
               { name: 'amount', type: 'uint256' },
+              { name: 'price', type: 'uint256' },
               { name: 'strategy', type: 'uint256' },
               { name: 'salt', type: 'uint256' },
             ],
@@ -47,6 +48,7 @@ describe("EthSigAuth", function () {
             author: author, // author
             token: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // token address
             amount: 1000,
+            price: 200,
             strategy: 1,
             salt: salt.toHex(),
         };
@@ -68,6 +70,7 @@ describe("EthSigAuth", function () {
         console.log("v", v);
 
         await controller.invoke(ethSigAuth, 'authenticate', {
+            price: 200,
             amount: 1000,
             strategy: 1,
             r: r,

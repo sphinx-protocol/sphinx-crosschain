@@ -23,6 +23,8 @@ func notify_L1_remote_contract{
     let (block_number) = get_block_number();
 
     // TODO: check that user has enough tokens
+    // Burn or stake user tokens
+    
     let (message_payload : felt*) = alloc();
     assert message_payload[0] = user_address;
     assert message_payload[1] = token_address;
@@ -41,7 +43,6 @@ func notify_L1_remote_contract{
 }
 
 # Consume from remote Ethereum deposit contract
-
 @l1_handler
 func receive_from_l1{
     syscall_ptr : felt*,

@@ -19,6 +19,10 @@
     {
         "inputs": [
             {
+                "name": "price",
+                "type": "felt"
+            },
+            {
                 "name": "amount",
                 "type": "felt"
             },

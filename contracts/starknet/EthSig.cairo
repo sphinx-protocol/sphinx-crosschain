@@ -24,6 +24,8 @@ from contracts.starknet.lib.math_utils import MathUtils
 //
 
 // @dev Authentication of an action (vote or propose) via an Ethereum signature
+// @param amount is the amount of tokens
+// @param strategy is the action requested. 0 is for place an order. 1 is to cancel an order and 2 is to perform a withdrawal
 // @param r Signature parameter
 // @param s Signature parameter
 // @param v Signature parameter
@@ -35,6 +37,7 @@ from contracts.starknet.lib.math_utils import MathUtils
 func authenticate{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(
+    price: felt,
     amount: felt,
     strategy: felt,
     r: Uint256,
@@ -46,7 +49,19 @@ func authenticate{
     calldata: felt*,
 ) -> () {
     // verify the signature
-    EIP712.verify_signed_message(amount, strategy, r, s, v, salt, market, calldata_len, calldata);
-    // TODO: execute the strategy
+    EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, market, calldata_len, calldata);
+
+    if (strategy == 0) {
+    // TODO: 
+    }
+
+    if (strategy == 1) {
+    // TODO: 
+    }
+
+    if (strategy == 2) {
+    // TODO: 
+    }
+
     return ();
 }
