@@ -1,0 +1,52 @@
+[
+    {
+        "data": [
+            {
+                "name": "user_address",
+                "type": "felt"
+            },
+            {
+                "name": "token_address",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            },
+            {
+                "name": "nonce",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "log_notify_L1_contract",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "from_address",
+                "type": "felt"
+            },
+            {
+                "name": "user_address",
+                "type": "felt"
+            },
+            {
+                "name": "token_address",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            },
+            {
+                "name": "nonce",
+                "type": "felt"
+            }
+        ],
+        "name": "receive_from_l1",
+        "outputs": [],
+        "type": "l1_handler"
+    }
+]
