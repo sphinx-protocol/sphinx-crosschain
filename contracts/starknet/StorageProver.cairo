@@ -13,6 +13,10 @@ func log_notify_L1_contract(user_address : felt, token_address: felt, amount: fe
 func nullifiers(nullifier : felt) -> (exist : felt){
 }
 
+@storage_var
+func nonce() -> (nonce : felt){
+}
+
 # Notify remote Ethereum withdrawal contract
 func notify_L1_remote_contract{
     syscall_ptr : felt*,
@@ -20,16 +24,18 @@ func notify_L1_remote_contract{
     range_check_ptr,
 }(user_address: felt, token_address: felt, amount: felt){
     let (gateway_addr) = L1_gateway_address.read();
-    let (block_number) = get_block_number();
 
     // TODO: check that user has enough tokens
     // Burn or stake user tokens
-    
+    let (nonce) = nonce.read();
+
     let (message_payload : felt*) = alloc();
     assert message_payload[0] = user_address;
     assert message_payload[1] = token_address;
     assert message_payload[2] = amount;
-    assert message_payload[3] = block_number;
+    assert message_payload[3] = nonce;
+
+    nonce.write(nonce + 1);
 
     send_message_to_l1(
         to_address=gateway_addr,
@@ -48,7 +54,7 @@ func receive_from_l1{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
-}(from_address: felt, user_address: felt, token_address: felt, amount: felt, block_number: felt) {
+}(from_address: felt, user_address: felt, token_address: felt, amount: felt, nonce: felt) {
     // Make sure the message was sent by the intended L1 contract.
     assert from_address = L1_CONTRACT_ADDRESS;
 
@@ -56,7 +62,7 @@ func receive_from_l1{
     assert payload_data[0] = user_address;
     assert payload_data[1] = token_address;
     assert payload_data[2] = amount;
-    assert payload_data[3] = block_number;
+    assert payload_data[3] = nonce;
 
     let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(8, data);
     let (exist) = nullifiers.read(nullifier);

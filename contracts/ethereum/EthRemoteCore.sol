@@ -23,6 +23,7 @@ contract EthRemoteCore{
   address public owner;
   bool public proverAddressIsSet = false;
   uint256 public l2StorageProverAddress;
+  uint256 public nonce;
   uint256 public SUBMIT_L1_BLOCKHASH_SELECTOR = 598342674068027518481179578557554850038206119856216505601406522348670006916;
   mapping (bytes32 => bool) public nullifiers;
   IStarknetCore public starknetCore;
@@ -30,6 +31,7 @@ contract EthRemoteCore{
   constructor(IStarknetCore _starknetCore) {
     starknetCore = _starknetCore;
     owner = msg.sender;
+    nonce = 0;
   }
 
   function setProverAddress(uint256 _l2StorageProverAddress) external {
@@ -49,8 +51,9 @@ contract EthRemoteCore{
     payload[0] = uint160(msg.sender);
     payload[1] = uint160(tokenAddress);
     payload[2] = amount;
-    payload[3] = block.number;
-    // create nonce instead
+    payload[3] = nonce;
+
+    nonce++;
 
     // Pass in a message fee. 
     /// starknetSelector(receive_from_l1) 598342674068027518481179578557554850038206119856216505601406522348670006916
@@ -58,7 +61,7 @@ contract EthRemoteCore{
   }
   
   // Note: this logic assumes that the messaging layer will never fail.
-  function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress, uint256 blocknumber) external {
+  function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress, uint256 nonce) external {
     require(proverAddressIsSet, "No prover");
 
     // Construct the L2 -> L1 withdrawal message payload.
@@ -66,7 +69,7 @@ contract EthRemoteCore{
     payload[0] = userAddress;
     payload[1] = tokenAddress;
     payload[2] = amount;
-    payload[3] = blocknumber;
+    payload[3] = nonce;
 
     // Fails if message doesn't exist.
     starknetCore.consumeMessageFromL2(l2StorageProverAddress, payload);
