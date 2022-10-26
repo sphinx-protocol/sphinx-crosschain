@@ -3144,10 +3144,10 @@
             "0x1104800180018000",
             "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffff48c",
             "0x480680017fff8000",
-            "0x1d7dbffc7a8de3d601367229ba8a687",
+            "0x1c2ce4f5a9b9bef74e2e79f59ff98f0",
             "0x400080007ffe7fff",
             "0x480680017fff8000",
-            "0x8aba6bf30572474cf5acb579ce4c27aa",
+            "0x86de7eea74b928333a5f774079924393",
             "0x400080017ffd7fff",
             "0x400080027ffd7ff9",
             "0x400080037ffd7ffa",
@@ -64568,11 +64568,11 @@
             },
             "contracts.starknet.lib.eip712.DOMAIN_HASH_HIGH": {
                 "type": "const",
-                "value": 184401420105962529394819794409309874090
+                "value": 179271815496897649406526539115778950035
             },
             "contracts.starknet.lib.eip712.DOMAIN_HASH_LOW": {
                 "type": "const",
-                "value": 2450033933046210655943296958440449671
+                "value": 2340718049785634073789277415518738672
             },
             "contracts.starknet.lib.eip712.EIP712": {
                 "type": "namespace"

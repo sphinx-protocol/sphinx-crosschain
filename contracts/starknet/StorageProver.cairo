@@ -33,6 +33,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     return ();
 }
 
+@external
 func notify_L1_remote_contract{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,

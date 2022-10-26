@@ -1,7 +1,7 @@
 // To deploy: npx hardhat run --network goerli scripts/deploy_l1.ts
 // To verify: npx hardhat verify --network goerli 0x4b4fE3787407A999f41703e340F8D33B143443d7 "0xde29d060D45901Fb19ED6C6e959EB22d8626708e"
 
-// Deployment address: 0xc6f82Bfd84e21e509372196D0e66BC966D767750
+// Deployment address: 0xc489D8139DEE2D3448785959251541990808c02C
 
 import { ethers } from "hardhat"
 

@@ -15,6 +15,16 @@ describe("EthSigAuth", function () {
         console.log("deployed");
     });
 
+    it("should create domain hash", async function () {
+        const domain = {
+            name: 'stark-x',
+            version: '1',
+            chainId: '5', // GOERLI
+        };
+        const domainHash = ethers.utils._TypedDataEncoder.hashDomain(domain);
+        console.log(domainHash);
+    });
+
     it("should validate an ethereum signature", async function () {
         const accounts = await ethers.getSigners();
         const salt: utils.splitUint256.SplitUint256 = utils.splitUint256.SplitUint256.fromHex('0x1');
@@ -23,7 +33,7 @@ describe("EthSigAuth", function () {
         const author = accounts[0].address;
 
         const domain = {
-            name: 'snapshot-x',
+            name: 'stark-x',
             version: '1',
             chainId: '5', // GOERLI
         };

@@ -33,11 +33,11 @@ from contracts.starknet.lib.array_utils import ArrayUtils
 const ETHEREUM_PREFIX = 0x1901;
 
 // Domain Separator: (Goerli chain id)
-// name: 'snapshot-x',
+// name: 'stark-x',
 // version: '1'
 // chainId: '5'
-const DOMAIN_HASH_HIGH = 0x8aba6bf30572474cf5acb579ce4c27aa;
-const DOMAIN_HASH_LOW = 0x01d7dbffc7a8de3d601367229ba8a687;
+const DOMAIN_HASH_HIGH = 0x86de7eea74b928333a5f774079924393;
+const DOMAIN_HASH_LOW = 0x01c2ce4f5a9b9bef74e2e79f59ff98f0;
 
 // keccak256("Order(bytes32 authenticator,bytes32 market,address author,address token,uint256 amount,uint256 price,uint256 strategy,uint256 salt)")
 // d4eeb39eaeef500fca5d670228cd9e51e7509352df8ac73b20f027951362af4c

@@ -34,6 +34,37 @@
         "type": "constructor"
     },
     {
+        "inputs": [],
+        "name": "view_counter",
+        "outputs": [
+            {
+                "name": "currentCount",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_address",
+                "type": "felt"
+            },
+            {
+                "name": "token_address",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            }
+        ],
+        "name": "notify_L1_remote_contract",
+        "outputs": [],
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "name": "from_address",

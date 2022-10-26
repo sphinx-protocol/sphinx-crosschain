@@ -42,7 +42,7 @@ contract EthRemoteCore{
 
   // Note: this logic assumes that the messaging layer will never fail.
   // https://www.cairo-lang.org/docs/hello_starknet/l1l2.html
-  function remoteDepositAccount(uint256 toAddress, address tokenAddress, uint256 amount) external payable {
+  function remoteDepositAccount(address toAddress, address tokenAddress, uint256 amount) external payable {
     require(proverAddressIsSet, "No prover");
     IERC20(tokenAddress).transfer(address(this), amount);
 
@@ -57,7 +57,7 @@ contract EthRemoteCore{
 
     // Pass in a message fee. 
     /// starknetSelector(receive_from_l1) 598342674068027518481179578557554850038206119856216505601406522348670006916
-    starknetCore.sendMessageToL2{value: msg.value}(toAddress, SUBMIT_L1_BLOCKHASH_SELECTOR, payload);
+    starknetCore.sendMessageToL2{value: msg.value}(uint256(uint160(toAddress)), SUBMIT_L1_BLOCKHASH_SELECTOR, payload);
   }
   
   // Note: this logic assumes that the messaging layer will never fail.
@@ -65,7 +65,7 @@ contract EthRemoteCore{
     require(proverAddressIsSet, "No prover");
 
     // Construct the L2 -> L1 withdrawal message payload.
-    uint256[] memory payload = new uint256[](3);
+    uint256[] memory payload = new uint256[](4);
     payload[0] = userAddress;
     payload[1] = tokenAddress;
     payload[2] = amount;

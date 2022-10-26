@@ -1,13 +1,13 @@
 // To deploy: npx hardhat run --network alpha scripts/deploy_l2.ts
 // To verify: npx hardhat starknet-verify --starknet-network alpha --path contracts/starknet/StorageProver.cairo --compiler-version 0.9.1 --address 0x01842fdb2938386ee745ea5d77cea68736d46665f510fea7ed45cd8110e39937
 
-// npx hardhat starknet-deploy --starknet-network alpha-goerli starknet-artifacts/contracts/starknet/DummyProver.cairo --inputs "429955882159492657148005544722965770209018004439"
-// Deployment address: 0x06de6fd6b0cb61b882f0c666bccd4361f8de5c56b32434fcc02d8b6ee2b972ff
+// npx hardhat starknet-deploy --starknet-network alpha-goerli starknet-artifacts/contracts/starknet/DummyProver.cairo --inputs "795768490102041104253562152038687745547332906247"
+// Deployment address: 0x016f2a04efe50e2b82fb14581e8c8835eb2aba76a7b27267939d8691549e0262
 
 import { starknet } from "hardhat"
 
 async function main() {
-    const L1GatewayAddress = 429955882159492657148005544722965770209018004439n
+    const L1GatewayAddress = 795768490102041104253562152038687745547332906247
 
     const storageProverFactory = await starknet.getContractFactory("DummyProver")
     const storageProver = await storageProverFactory.deploy({

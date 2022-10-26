@@ -22,7 +22,7 @@ interface IStarknetCore {
 contract DummyCore{
   address public owner;
   bool public proverAddressIsSet = false;
-  uint256 counter;
+  uint256 public counter;
   uint256 public l2StorageProverAddress;
   uint256 public nonce;
   uint256 public SUBMIT_L1_BLOCKHASH_SELECTOR = 598342674068027518481179578557554850038206119856216505601406522348670006916;
@@ -32,7 +32,7 @@ contract DummyCore{
   constructor(IStarknetCore _starknetCore) {
     starknetCore = _starknetCore;
     owner = msg.sender;
-    nonce = 0;
+    nonce = 1;
     counter = 0;
   }
 
@@ -62,7 +62,7 @@ contract DummyCore{
   // Note: this logic assumes that the messaging layer will never fail.
   function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress, uint256 nonce) external {
     // Construct the L2 -> L1 withdrawal message payload.
-    uint256[] memory payload = new uint256[](3);
+    uint256[] memory payload = new uint256[](4);
     payload[0] = userAddress;
     payload[1] = tokenAddress;
     payload[2] = amount;

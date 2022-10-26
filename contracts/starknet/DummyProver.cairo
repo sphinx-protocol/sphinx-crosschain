@@ -34,10 +34,21 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     _L1_gateway_address: felt
 ){
     L1_gateway_address.write(_L1_gateway_address);
+    counter.write(0);
     return ();
 }
 
+@view
+func view_counter{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}() -> (currentCount: felt){
+    let (currentCount) = counter.read();
+    return (currentCount=currentCount);
+}
 
+@external
 func notify_L1_remote_contract{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
