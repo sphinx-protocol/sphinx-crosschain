@@ -48,6 +48,16 @@ func view_counter{
     return (currentCount=currentCount);
 }
 
+@view
+func view_nonce{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}() -> (currentNonce: felt){
+    let (currentNonce) = counter.read();
+    return (currentNonce=currentNonce);
+}
+
 @external
 func notify_L1_remote_contract{
     syscall_ptr : felt*,

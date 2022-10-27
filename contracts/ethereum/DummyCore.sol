@@ -60,7 +60,7 @@ contract DummyCore{
   }
   
   // Note: this logic assumes that the messaging layer will never fail.
-  function remoteWithdrawAccount(uint256 tokenAddress, uint amount, uint256 userAddress, uint256 nonce) external {
+  function remoteWithdrawAccount(uint256 tokenAddress, uint256 amount, uint256 userAddress, uint256 nonce) external {
     // Construct the L2 -> L1 withdrawal message payload.
     uint256[] memory payload = new uint256[](4);
     payload[0] = userAddress;

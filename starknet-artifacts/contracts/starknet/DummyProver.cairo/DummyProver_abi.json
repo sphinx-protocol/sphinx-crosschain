@@ -46,6 +46,18 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "view_nonce",
+        "outputs": [
+            {
+                "name": "currentNonce",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "name": "user_address",

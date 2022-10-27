@@ -25,6 +25,17 @@ func nonce() -> (nonce : felt){
 func nullifiers(nullifier : Uint256) -> (exist : felt){
 }
 
+@view
+func view_nonce{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}() -> (currentNonce: felt){
+    let (currentNonce) = counter.read();
+    return (currentNonce=currentNonce);
+}
+
+
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     _L1_gateway_address: felt
@@ -41,8 +52,10 @@ func notify_L1_remote_contract{
 }(user_address: felt, token_address: felt, amount: felt){
     let (gateway_addr) = L1_gateway_address.read();
 
-    // TODO: check that user has enough tokens
-    // Burn or stake user tokens
+    // TODO: check that user has enough tokens in mapping
+    // reduce amount from mapping 
+    // transfer back 1000 USDC from DEX to lender
+
     let (currentNonce) = nonce.read();
 
     let (message_payload : felt*) = alloc();
@@ -102,6 +115,8 @@ func receive_from_l1{
     nullifiers.write(nullifier, 1);
 
     // TODO: fund tokens to account
+    // Transfer 1000 USDC from lender to user account
+    // credit 1000 USDC inside mapping
     return ();
 }
 

@@ -44,7 +44,7 @@ contract EthRemoteCore{
   // https://www.cairo-lang.org/docs/hello_starknet/l1l2.html
   function remoteDepositAccount(address toAddress, address tokenAddress, uint256 amount) external payable {
     require(proverAddressIsSet, "No prover");
-    IERC20(tokenAddress).transfer(address(this), amount);
+    IERC20(tokenAddress).transfer(address(this), amount); 
 
     // Construct the L1 -> L2 message payload.
     uint256[] memory payload = new uint256[](4);
