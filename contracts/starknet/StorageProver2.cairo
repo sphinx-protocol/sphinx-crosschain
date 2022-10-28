@@ -77,7 +77,7 @@ func notify_L1_remote_contract{
     return ();
 }
 
-@l1_handler
+@external
 func receive_from_l1{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
@@ -87,8 +87,8 @@ func receive_from_l1{
     alloc_locals;
 
     // Make sure the message was sent by the intended L1 contract.
-    let (gateway_addr) = L1_gateway_address.read();
-    assert from_address = gateway_addr;
+    // let (gateway_addr) = L1_gateway_address.read();
+    // assert from_address = gateway_addr;
 
     let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
     let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
@@ -113,7 +113,7 @@ func receive_from_l1{
     }
 
     nullifiers.write(nullifier, 1);
-    
+    // call remote_deposit on gateway
     // TODO: fund tokens to account
     // Transfer 1000 USDC from lender to user account
     // credit 1000 USDC inside mapping
