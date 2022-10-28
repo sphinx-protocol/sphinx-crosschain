@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // @title EIP712 Library
-// @author Stark X - Remi
+// @author Stark X team
 // @reference: The code was inspired from the Snapshot X EIP 712 implementation. Source: https://github.com/snapshot-labs/sx-core/blob/05e0b1be3000d91d263fe85069f1bf571d4a5767/contracts/starknet/lib/eip712.cairo
 // @notice A library for verifying Ethereum EIP712 signatures on typed data
 // @dev Refer to the official EIP for more information: https://eips.ethereum.org/EIPS/eip-712
@@ -80,15 +80,14 @@ namespace EIP712 {
         MathUtils.assert_valid_uint256(s);
         MathUtils.assert_valid_uint256(salt);
 
-        let voter_address = calldata[0];
+        let user_address = calldata[0];
         let token_address = calldata[1];
-        // let amount = calldata[2];
 
         let (authenticator_address) = get_contract_address();
         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
 
-        // Ensure voter has not already used this salt in a previous action
-        let (already_used) = EIP712_salts.read(voter_address, salt);
+        // Ensure user has not already used this salt in a previous action
+        let (already_used) = EIP712_salts.read(user_address, salt);
         with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
@@ -98,7 +97,7 @@ namespace EIP712 {
         let (price_u256) = MathUtils.felt_to_uint256(price);
         let (strategy_u256) = MathUtils.felt_to_uint256(strategy);
 
-        let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
+        let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
         let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
 
         // Now construct the data hash (hashStruct)
@@ -106,7 +105,7 @@ namespace EIP712 {
         assert data[0] = Uint256(ORDER_TYPE_HASH_LOW, ORDER_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
         assert data[2] = market_u256;
-        assert data[3] = voter_address_u256;
+        assert data[3] = user_address_u256;
         assert data[4] = token_address_u256;
         assert data[5] = amount_u256;
         assert data[6] = price_u256;
@@ -139,13 +138,13 @@ namespace EIP712 {
 
         // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
         // We substract `27` because `v` = `{0, 1} + 27`
-        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, voter_address);
+        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, user_address);
 
         // Verify that all the previous keccaks are correct
         finalize_keccak(keccak_ptr_start, keccak_ptr);
 
         // Write the salt to prevent replay attack
-        EIP712_salts.write(voter_address, salt, 1);
+        EIP712_salts.write(user_address, salt, 1);
         return ();
     }
 

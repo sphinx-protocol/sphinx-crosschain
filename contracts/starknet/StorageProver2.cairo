@@ -113,7 +113,7 @@ func receive_from_l1{
     }
 
     nullifiers.write(nullifier, 1);
-    // call remote_deposit on gateway
+    // call remote_deposit(user address, amount, token address) on gateway
     // TODO: fund tokens to account
     // Transfer 1000 USDC from lender to user account
     // credit 1000 USDC inside mapping

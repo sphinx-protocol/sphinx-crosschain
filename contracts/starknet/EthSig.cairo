@@ -52,7 +52,8 @@ func authenticate{
     EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, market, calldata_len, calldata);
 
     if (strategy == 0) {
-    // TODO: 
+    // TODO: call the limit buy function on the DEX
+    // DEX (user_address, token_address, amount, price etc....)
     }
 
     if (strategy == 1) {
