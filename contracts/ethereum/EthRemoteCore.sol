@@ -32,6 +32,8 @@ contract EthRemoteCore {
         947393008803241923670283226588666915944828069686000869492309691981339496568;
     uint32 public ETH_GOERLI_CHAIN_ID = 1;
     mapping(bytes32 => bool) public nullifiers;
+    mapping(address => uint256) public ethToStarknetERC20Addresses;
+    mapping(uint256 => address) public starknetToEthERC20Addresses;
     IStarknetCore public starknetCore;
 
     constructor(IStarknetCore _starknetCore) {
@@ -40,10 +42,22 @@ contract EthRemoteCore {
         nonce = 0;
     }
 
-    function setRemoteAddress(uint256 _l2EthRemoteCoreAddress) external {
+    modifier OnlyOwner() {
         require(msg.sender == owner, "Only owner");
+        _;
+    }
+
+    function setRemoteAddress(uint256 _l2EthRemoteCoreAddress) external OnlyOwner {
         l2EthRemoteCoreAddress = _l2EthRemoteCoreAddress;
         remoteAddressIsSet = true;
+    }
+
+    function updateEthToStarknetERC20Addresses(address ethERC20Address, uint256 starknetERC20Address) external OnlyOwner {
+        ethToStarknetERC20Addresses[ethERC20Address] = starknetERC20Address;
+    }
+
+    function updateStarknetToEthERC20Addresses(address ethERC20Address, uint256 starknetERC20Address) external OnlyOwner {
+        starknetToEthERC20Addresses[starknetERC20Address] = ethERC20Address;
     }
 
     // Note: this logic assumes that the messaging layer will never fail.
@@ -58,7 +72,7 @@ contract EthRemoteCore {
         // Construct the L1 -> L2 message payload.
         uint256[] memory payload = new uint256[](5);
         payload[0] = uint160(msg.sender);
-        payload[1] = uint160(tokenAddress);
+        payload[1] = ethToStarknetERC20Addresses[tokenAddress];
         payload[2] = amount;
         payload[3] = nonce;
         payload[4] = ETH_GOERLI_CHAIN_ID;
@@ -116,13 +130,13 @@ contract EthRemoteCore {
         starknetCore.consumeMessageFromL2(l2EthRemoteCoreAddress, payload);
 
         address convertedUserAddress = address(uint160(userAddress));
-        address convertedTokendAddress = address(uint160(userAddress));
+        address convertedTokenAddress = starknetToEthERC20Addresses[tokenAddress];
 
         // hash of payload is the nullifier to avoid double spending
         bytes32 nullifier = keccak256(abi.encodePacked(payload));
         require(!nullifiers[nullifier], "Double spend");
 
-        IERC20(convertedTokendAddress).transfer(convertedUserAddress, amount);
+        IERC20(convertedTokenAddress).transfer(convertedUserAddress, amount);
         nullifiers[nullifier] = true;
     }
 }
