@@ -9,8 +9,6 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 
 from contracts.starknet.lib.math_utils import MathUtils
 
-const ETH_GOERLI_CHAIN_ID = 1;
-
 @contract_interface
 namespace IGatewayContract {
     // Relay remote deposit from other chain
@@ -57,14 +55,14 @@ func view_nonce{
     return (currentNonce=currentNonce);
 }
 
+// Handle request from L1 EthRemoteCore contract to deposit assets to DEX.
 @l1_handler
 func remote_deposit{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
     bitwise_ptr: BitwiseBuiltin*
-} (from_address: felt, user_address: felt, token_address: felt, amount: felt, nonce: felt
-) -> (success : felt) {
+} (from_address: felt, user_address: felt, token_address: felt, amount: felt, nonce: felt, chain_id : felt) -> (success : felt) {
     alloc_locals;
 
     // Make sure the message was sent by the intended L1 contract.
@@ -76,6 +74,7 @@ func remote_deposit{
     assert payload_data[1] = token_address;
     assert payload_data[2] = amount;
     assert payload_data[3] = nonce;
+    assert payload_data[4] = chain_id;
 
     let (local keccak_ptr: felt*) = alloc();
     let keccak_ptr_start = keccak_ptr;
@@ -90,18 +89,56 @@ func remote_deposit{
     nullifiers.write(nullifier, 1);
     
     let (_gateway_addr) = gateway_addr.read();
-    IGatewayContract.remote_deposit(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, token_address, amount); 
+    IGatewayContract.remote_deposit(_gateway_addr, user_address, chain_id, token_address, amount); 
 
     return (success=1);
 }
 
+// Handle request from L1 EthRemoteCore contract to withdraw assets from DEX.
+@l1_handler
+func request_remote_withdraw{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+    bitwise_ptr: BitwiseBuiltin*
+} (from_address : felt, user_address: felt, token_address: felt, amount: felt, nonce : felt, chain_id : felt) {
+
+    // Make sure the message was sent by the intended L1 contract.
+    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
+    assert from_address = _L1_eth_remote_address;
+
+    let (payload_data : Uint256*) = alloc();
+    assert payload_data[0] = user_address;
+    assert payload_data[1] = token_address;
+    assert payload_data[2] = amount;
+    assert payload_data[3] = nonce;
+    assert payload_data[4] = chain_id;
+
+    let (local keccak_ptr: felt*) = alloc();
+    let keccak_ptr_start = keccak_ptr;
+
+    let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(4, payload_data);
+    let (exist) = nullifiers.read(nullifier);
+     // Prevent double deposit
+    if (exist == 1) {
+        return (success=0);
+    }
+    nullifiers.write(nullifier, 1);
+
+    let (_gateway_addr) = gateway_addr.read();
+    IGatewayContract.remote_withdraw(_gateway_addr, user_address, chain_id, token_address, amount); 
+}
+
+// Send confirmation to L1 EthRemoteCore contract to release assets to users.
 @external
-func remote_withdraw{
+func confirm_remote_withdraw{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
 } (user_address: felt, token_address: felt, amount: felt) {
-    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
+    let (caller) = get_caller_address();
+    let (_gateway_addr) = gateway_addr.read();
+    assert caller = _gateway_addr;
 
     let (currentNonce) = nonce.read();
 
@@ -113,6 +150,7 @@ func remote_withdraw{
 
     nonce.write(currentNonce + 1);
 
+    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
     send_message_to_l1(
         to_address=_L1_eth_remote_address,
         payload_size=4,

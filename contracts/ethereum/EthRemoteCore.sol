@@ -28,6 +28,9 @@ contract EthRemoteCore {
     /// starknetSelector("remote_deposit")
     uint256 public REMOTE_DEPOSIT_SELECTOR =
         1795963806397751995885658948754777263288166063579995395494415972176756934361;
+    uint256 public REMOTE_WITHDRAW_SELECTOR =
+        947393008803241923670283226588666915944828069686000869492309691981339496568;
+    uint32 public ETH_GOERLI_CHAIN_ID = 1;
     mapping(bytes32 => bool) public nullifiers;
     IStarknetCore public starknetCore;
 
@@ -53,11 +56,12 @@ contract EthRemoteCore {
         IERC20(tokenAddress).transfer(address(this), amount);
 
         // Construct the L1 -> L2 message payload.
-        uint256[] memory payload = new uint256[](4);
+        uint256[] memory payload = new uint256[](5);
         payload[0] = uint160(msg.sender);
         payload[1] = uint160(tokenAddress);
         payload[2] = amount;
         payload[3] = nonce;
+        payload[4] = ETH_GOERLI_CHAIN_ID;
 
         nonce++;
 
@@ -70,7 +74,30 @@ contract EthRemoteCore {
     }
 
     // Note: this logic assumes that the messaging layer will never fail.
-    function remoteWithdrawAccount(
+    function requestRemoteWithdraw(uint256 tokenAddress, uint256 amount)
+        external
+    {
+        require(remoteAddressIsSet, "No prover");
+
+        // Construct the L1 -> L2 withdrawal message payload.
+        uint256[] memory payload = new uint256[](4);
+        payload[0] = uint160(msg.sender);
+        payload[1] = uint160(tokenAddress);
+        payload[2] = amount;
+        payload[3] = nonce;
+        payload[4] = ETH_GOERLI_CHAIN_ID;
+
+        nonce++;
+
+        starknetCore.sendMessageToL2(
+            l2EthRemoteCoreAddress,
+            REMOTE_WITHDRAW_SELECTOR,
+            payload
+        );
+    }
+
+    // Note: this logic assumes that the messaging layer will never fail.
+    function confirmRemoteWithdraw(
         uint256 tokenAddress,
         uint256 amount,
         uint256 userAddress,
