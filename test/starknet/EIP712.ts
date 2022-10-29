@@ -148,7 +148,7 @@ describe("Authenticator", function () {
 
         const proposeCalldata = [
             author,
-            "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b233", // token_address
+            "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b233", // quote_token 
         ];
 
         console.log("proposeCalldata", proposeCalldata);
