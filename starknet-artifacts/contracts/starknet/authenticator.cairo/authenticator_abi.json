@@ -1,0 +1,81 @@
+[
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "previousOwner",
+                "type": "felt"
+            },
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "price",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "felt"
+            },
+            {
+                "name": "strategy",
+                "type": "felt"
+            },
+            {
+                "name": "r",
+                "type": "Uint256"
+            },
+            {
+                "name": "s",
+                "type": "Uint256"
+            },
+            {
+                "name": "v",
+                "type": "felt"
+            },
+            {
+                "name": "salt",
+                "type": "Uint256"
+            },
+            {
+                "name": "base_token",
+                "type": "felt"
+            },
+            {
+                "name": "calldata_len",
+                "type": "felt"
+            },
+            {
+                "name": "calldata",
+                "type": "felt*"
+            }
+        ],
+        "name": "authenticate",
+        "outputs": [],
+        "type": "function"
+    }
+]
