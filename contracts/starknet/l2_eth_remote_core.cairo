@@ -14,6 +14,9 @@ namespace IGatewayContract {
     // Relay remote deposit from other chain
     func remote_deposit(user : felt, chain_id : felt, asset : felt, amount : felt) {
     }
+    // Relay remote withdraw from other chain.
+    func remote_withdraw(user : felt, chain_id : felt, asset : felt, amount : felt) {
+    }
 }
 
 @storage_var
