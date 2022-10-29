@@ -9,7 +9,7 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 
 from contracts.starknet.lib.math_utils import MathUtils
 
-const ETH_GOERLI_CHAIN_ID = 5;
+const ETH_GOERLI_CHAIN_ID = 1;
 
 @contract_interface
 namespace IGatewayContract {
@@ -100,12 +100,8 @@ func remote_withdraw{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
-}(user_address: felt, token_address: felt, amount: felt){
-    let (gateway_addr) = L1_eth_remote_address.read();
-
-    // TODO: check that user has enough tokens in mapping
-    // reduce amount from mapping 
-    // transfer back 1000 USDC from DEX to lender
+} (user_address: felt, token_address: felt, amount: felt) {
+    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
 
     let (currentNonce) = nonce.read();
 
@@ -118,7 +114,7 @@ func remote_withdraw{
     nonce.write(currentNonce + 1);
 
     send_message_to_l1(
-        to_address=gateway_addr,
+        to_address=_L1_eth_remote_address,
         payload_size=4,
         payload=message_payload,
     );
