@@ -47,16 +47,25 @@ contract EthRemoteCore {
         _;
     }
 
-    function setRemoteAddress(uint256 _l2EthRemoteCoreAddress) external OnlyOwner {
+    function setRemoteAddress(uint256 _l2EthRemoteCoreAddress)
+        external
+        OnlyOwner
+    {
         l2EthRemoteCoreAddress = _l2EthRemoteCoreAddress;
         remoteAddressIsSet = true;
     }
 
-    function updateEthToStarknetERC20Addresses(address ethERC20Address, uint256 starknetERC20Address) external OnlyOwner {
+    function updateEthToStarknetERC20Addresses(
+        address ethERC20Address,
+        uint256 starknetERC20Address
+    ) external OnlyOwner {
         ethToStarknetERC20Addresses[ethERC20Address] = starknetERC20Address;
     }
 
-    function updateStarknetToEthERC20Addresses(address ethERC20Address, uint256 starknetERC20Address) external OnlyOwner {
+    function updateStarknetToEthERC20Addresses(
+        address ethERC20Address,
+        uint256 starknetERC20Address
+    ) external OnlyOwner {
         starknetToEthERC20Addresses[starknetERC20Address] = ethERC20Address;
     }
 
@@ -125,12 +134,15 @@ contract EthRemoteCore {
         payload[1] = tokenAddress;
         payload[2] = amount;
         payload[3] = nonce;
+        payload[4] = ETH_GOERLI_CHAIN_ID;
 
         // Fails if message doesn't exist.
         starknetCore.consumeMessageFromL2(l2EthRemoteCoreAddress, payload);
 
         address convertedUserAddress = address(uint160(userAddress));
-        address convertedTokenAddress = starknetToEthERC20Addresses[tokenAddress];
+        address convertedTokenAddress = starknetToEthERC20Addresses[
+            tokenAddress
+        ];
 
         // hash of payload is the nullifier to avoid double spending
         bytes32 nullifier = keccak256(abi.encodePacked(payload));
