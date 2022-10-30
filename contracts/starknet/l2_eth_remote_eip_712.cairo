@@ -105,17 +105,14 @@ func authenticate{
 
     // Limit buy - post-only mode
     if (strategy == 0) {
-        // To update ETH_GOERLI_CHAIN_ID
         IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
     }
     // Limit buy - post-only mode disabled
     if (strategy == 1) {
-        // To update ETH_GOERLI_CHAIN_ID
         IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
     }
     // Limit sell - post-only mode
     if (strategy == 2) {
-        // To update ETH_GOERLI_CHAIN_ID
         IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
     }
     // Limit sell - post-only mode disabled
