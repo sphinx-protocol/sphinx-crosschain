@@ -66,13 +66,11 @@ func set_addresses{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check
     Ownable.assert_only_owner();
     let (is_remote_set) = is_eth_remote_addr_set.read();
     let (is_gateway_set) = is_gateway_addr_set.read();
-    if (is_remote_set + is_gateway_set == 0) {
-        L1_eth_remote_address.write(_L1_eth_remote_address);
-        gateway_addr.write(_gateway_addr);
-        handle_revoked_refs();
-    } else {
-        handle_revoked_refs();
-    }
+    assert is_remote_set + is_gateway_set == 0
+    L1_eth_remote_address.write(_L1_eth_remote_address);
+    gateway_addr.write(_gateway_addr);
+    is_eth_remote_addr_set.write(1);
+    is_gateway_addr_set.write(1);
     return ();
 }
 

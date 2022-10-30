@@ -21,20 +21,23 @@ const ETH_GOERLI_CHAIN_ID = 1; // To replace by sending from L1 side
 
 @contract_interface
 namespace IGatewayContract {
-    // Submit a new bid (limit buy order) to a given market.
-    func create_bid(base_asset : felt, quote_asset : felt, price : felt, amount : felt, post_only : felt) {
+    // Relay request to submit a new bid (limit buy order) to a given market.
+    func remote_create_bid(user : felt, chain_id : felt, base_asset : felt, quote_asset : felt, price : felt, amount : felt, post_only : felt) {
     }
-    // Submit a new ask (limit sell order) to a given market.
-    func create_ask(base_asset : felt, quote_asset : felt, price : felt, amount : felt, post_only : felt) {
+    // Relay request to submit a new ask (limit sell order) to a given market.
+    func remote_create_ask(user : felt, chain_id : felt, base_asset : felt, quote_asset : felt, price : felt, amount : felt, post_only : felt) {
     }
-    // Submit a new market buy to a given market.
-    func market_buy(base_asset : felt, quote_asset : felt, amount : felt) {
+    // Relay cross-chain request to submit a new market buy to a given market.
+    func remote_market_buy(user : felt, chain_id : felt, base_asset : felt, quote_asset : felt, amount : felt) {
     }
-    // Submit a new market sell to a given market.
-    func market_sell(base_asset : felt, quote_asset : felt, amount : felt) {
+    // Relay cross-chain request to submit a new market sell to a given market.
+    func remote_market_sell(user : felt, chain_id : felt, base_asset : felt, quote_asset : felt, amount : felt) {
     }
-    // Delete an order and update limits, markets and balances.
-    func cancel_order(order_id : felt) {
+    // Relay cross-chain request to cancel an order and update limits, markets and balances.
+    func remote_cancel_order(user : felt, chain_id : felt, order_id : felt) {
+    }
+    // Relay remote withdraw request from other chain.
+    func remote_withdraw(user : felt, chain_id : felt, asset : felt, amount : felt) {
     }
 }
 
@@ -59,13 +62,9 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 func set_gateway_addr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (_gateway_addr : felt) {
     Ownable.assert_only_owner();
     let (is_set) = is_gateway_addr_set.read();
-    if (is_set == 0) {
-        gateway_addr.write(_gateway_addr);
-        is_gateway_addr_set.write(1);
-         handle_revoked_refs();
-    } else {
-        handle_revoked_refs();
-    }
+    assert is_set = 0;
+    gateway_addr.write(_gateway_addr);
+    is_gateway_addr_set.write(1);
     return ();
 }
 
@@ -100,36 +99,44 @@ func authenticate{
     // verify the signature
     EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, base_token, calldata_len, calldata);
 
+    let (_gateway_addr) = gateway_addr.read();
+    let user_address = calldata[0];
+    let quote_asset = calldata[1];
+
     // Limit buy - post-only mode
     if (strategy == 0) {
-        // TODO: call the limit buy function on the DEX
-        // DEX (user_address, token_address, amount, price etc....)
+        // To update ETH_GOERLI_CHAIN_ID
+        IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
     }
-
     // Limit buy - post-only mode disabled
     if (strategy == 1) {
+        // To update ETH_GOERLI_CHAIN_ID
+        IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
     }
-
     // Limit sell - post-only mode
     if (strategy == 2) {
+        // To update ETH_GOERLI_CHAIN_ID
+        IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
     }
-
     // Limit sell - post-only mode disabled
     if (strategy == 3) {
+        IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
     }
-
     // Market buy
     if (strategy == 4) {
+        IGatewayContract.remote_market_buy(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
     }
-
     // Market sell
     if (strategy == 5) {
+        IGatewayContract.remote_market_sell(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
     }
-
-    // Send request to withdraw funds
+    // Cancel order
     if (strategy == 6) {
-        let (_gateway_addr) = gateway_addr.read();
-        IGatewayContract.remote_withdraw(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_token, amount); // to update ETH_GOERLI_CHAIN_ID
+        IGatewayContract.cancel_order(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID); 
+    }
+    // Send request to withdraw funds
+    if (strategy == 7) {
+        IGatewayContract.remote_withdraw(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_token, amount); 
     }  
 
     return ();
