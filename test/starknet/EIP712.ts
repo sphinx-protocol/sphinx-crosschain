@@ -129,8 +129,8 @@ describe("Authenticator", function () {
               { name: 'amount', type: 'uint256' },
               { name: 'price', type: 'uint256' },
               { name: 'strategy', type: 'uint256' },
-            //   { name: 'chainId', type: 'felt' },
-            //   { name: 'orderId', type: 'felt' },
+              { name: 'chainId', type: 'uint256' },
+              { name: 'orderId', type: 'uint256' },
               { name: 'salt', type: 'uint256' },
             ],
         };
@@ -143,6 +143,8 @@ describe("Authenticator", function () {
             amount: 1000,
             price: 200,
             strategy: 1,
+            chainId: 5,
+            orderId: 123456,
             salt: salt.toHex(),
         };
 
@@ -166,6 +168,8 @@ describe("Authenticator", function () {
             price: 200,
             amount: 1000,
             strategy: 1,
+            chainId: 5,
+            orderId: 123456,
             r: r,
             s: s,
             v: v,

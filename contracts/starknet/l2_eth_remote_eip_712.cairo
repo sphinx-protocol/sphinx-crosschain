@@ -88,6 +88,8 @@ func authenticate{
     price: felt,
     amount: felt,
     strategy: felt,
+    chainId: felt,
+    orderId: felt,
     r: Uint256,
     s: Uint256,
     v: felt,
@@ -97,7 +99,7 @@ func authenticate{
     calldata: felt*,
 ) -> () {
     // verify the signature
-    EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, base_asset, calldata_len, calldata);
+    EIP712.verify_signed_message(price, amount, strategy, chainId, orderId, r, s, v, salt, base_asset, calldata_len, calldata);
 
     // let (_gateway_addr) = gateway_addr.read();
     // let user_address = calldata[0];

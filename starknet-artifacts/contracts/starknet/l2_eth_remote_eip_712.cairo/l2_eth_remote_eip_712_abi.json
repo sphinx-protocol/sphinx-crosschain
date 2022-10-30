@@ -68,6 +68,14 @@
                 "type": "felt"
             },
             {
+                "name": "chainId",
+                "type": "felt"
+            },
+            {
+                "name": "orderId",
+                "type": "felt"
+            },
+            {
                 "name": "r",
                 "type": "Uint256"
             },
