@@ -76,7 +76,7 @@ func set_gateway_addr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_chec
 // @param s : signature parameter
 // @param v : signature parameter
 // @param salt : signature salt
-// @param base_token : felt representation of base asset token address (or token to be withdrawn)
+// @param base_asset : felt representation of base asset token address (or token to be withdrawn)
 // @param calldata_len : length of calldata array
 // @param calldata : calldata array
 //        calldata[0] : user_address, the address of the EOA signing the message
@@ -92,49 +92,49 @@ func authenticate{
     s: Uint256,
     v: felt,
     salt: Uint256,
-    base_token: felt,
+    base_asset: felt,
     calldata_len: felt,
     calldata: felt*,
 ) -> () {
     // verify the signature
-    EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, base_token, calldata_len, calldata);
+    EIP712.verify_signed_message(price, amount, strategy, r, s, v, salt, base_asset, calldata_len, calldata);
 
-    let (_gateway_addr) = gateway_addr.read();
-    let user_address = calldata[0];
-    let quote_asset = calldata[1];
+    // let (_gateway_addr) = gateway_addr.read();
+    // let user_address = calldata[0];
+    // let quote_asset = calldata[1];
 
-    // Limit buy - post-only mode
-    if (strategy == 0) {
-        IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
-    }
-    // Limit buy - post-only mode disabled
-    if (strategy == 1) {
-        IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
-    }
-    // Limit sell - post-only mode
-    if (strategy == 2) {
-        IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
-    }
-    // Limit sell - post-only mode disabled
-    if (strategy == 3) {
-        IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
-    }
-    // Market buy
-    if (strategy == 4) {
-        IGatewayContract.remote_market_buy(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
-    }
-    // Market sell
-    if (strategy == 5) {
-        IGatewayContract.remote_market_sell(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
-    }
-    // Cancel order
-    if (strategy == 6) {
-        IGatewayContract.cancel_order(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID); 
-    }
-    // Send request to withdraw funds
-    if (strategy == 7) {
-        IGatewayContract.remote_withdraw(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_token, amount); 
-    }  
+    // // Limit buy - post-only mode
+    // if (strategy == 0) {
+    //     IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
+    // }
+    // // Limit buy - post-only mode disabled
+    // if (strategy == 1) {
+    //     IGatewayContract.remote_create_bid(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
+    // }
+    // // Limit sell - post-only mode
+    // if (strategy == 2) {
+    //     IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 1); 
+    // }
+    // // Limit sell - post-only mode disabled
+    // if (strategy == 3) {
+    //     IGatewayContract.remote_create_ask(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, price, amount, 0); 
+    // }
+    // // Market buy
+    // if (strategy == 4) {
+    //     IGatewayContract.remote_market_buy(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
+    // }
+    // // Market sell
+    // if (strategy == 5) {
+    //     IGatewayContract.remote_market_sell(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, quote_asset, amount); 
+    // }
+    // // Cancel order
+    // if (strategy == 6) {
+    //     IGatewayContract.cancel_order(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID); 
+    // }
+    // // Send request to withdraw funds
+    // if (strategy == 7) {
+    //     IGatewayContract.remote_withdraw(_gateway_addr, user_address, ETH_GOERLI_CHAIN_ID, base_asset, amount); 
+    // }  
 
     return ();
 }

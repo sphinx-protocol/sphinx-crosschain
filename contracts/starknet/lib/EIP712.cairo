@@ -39,10 +39,10 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x86de7eea74b928333a5f774079924393;
 const DOMAIN_HASH_LOW = 0x01c2ce4f5a9b9bef74e2e79f59ff98f0;
 
-// keccak256("Order(bytes32 authenticator,bytes32 base_token,address author,bytes32 quote_token,uint256 amount,uint256 price,uint256 strategy,uint256 salt)")
-// 45cafd6c81cbee91be815b3b88d24c5f1916576ebb7338e9feefb2d8079d9199
-const ORDER_TYPE_HASH_HIGH = 0x45cafd6c81cbee91be815b3b88d24c5f;
-const ORDER_TYPE_HASH_LOW = 0x1916576ebb7338e9feefb2d8079d9199;
+// keccak256("Order(bytes32 authenticator,bytes32 base_asset,address author,bytes32 quote_asset,uint256 amount,uint256 price,uint256 strategy,uint256 salt)")
+// bd5d288a55eee5534993c98da35c11d2182492b247692dd2d6ddf8b3ed84375d
+const ORDER_TYPE_HASH_HIGH = 0xbd5d288a55eee5534993c98da35c11d2;
+const ORDER_TYPE_HASH_LOW = 0x182492b247692dd2d6ddf8b3ed84375d;
 
 // @dev Signature salts store
 @storage_var
@@ -70,7 +70,7 @@ namespace EIP712 {
         s: Uint256,
         v: felt,
         salt: Uint256,
-        base_token: felt,
+        base_asset: felt,
         calldata_len: felt,
         calldata: felt*,
     ) {
@@ -81,7 +81,7 @@ namespace EIP712 {
         MathUtils.assert_valid_uint256(salt);
 
         let user_address = calldata[0];
-        let quote_token = calldata[1];
+        let quote_asset = calldata[1];
 
         let (authenticator_address) = get_contract_address();
         let (auth_address_u256) = MathUtils.felt_to_uint256(authenticator_address);
@@ -92,21 +92,21 @@ namespace EIP712 {
             assert already_used = 0;
         }
 
-        let (base_token_u256) = MathUtils.felt_to_uint256(base_token);
+        let (base_asset_u256) = MathUtils.felt_to_uint256(base_asset);
         let (amount_u256) = MathUtils.felt_to_uint256(amount);
         let (price_u256) = MathUtils.felt_to_uint256(price);
         let (strategy_u256) = MathUtils.felt_to_uint256(strategy);
 
         let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
-        let (quote_token_u256) = MathUtils.felt_to_uint256(quote_token);
+        let (quote_asset_u256) = MathUtils.felt_to_uint256(quote_asset);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
         assert data[0] = Uint256(ORDER_TYPE_HASH_LOW, ORDER_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
-        assert data[2] = base_token_u256;
+        assert data[2] = base_asset_u256;
         assert data[3] = user_address_u256;
-        assert data[4] = quote_token_u256;
+        assert data[4] = quote_asset_u256;
         assert data[5] = amount_u256;
         assert data[6] = price_u256;
         assert data[7] = strategy_u256;

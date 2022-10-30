@@ -10,8 +10,8 @@ let controller: Account;
 describe("Authenticator", function () {
     before(async function () {
         controller = (await starknet.deployAccount('OpenZeppelin'));
-        Authenticator = await starknet.getContractFactory("authenticator");
-        authenticator = await Authenticator.deploy();
+        Authenticator = await starknet.getContractFactory("l2_eth_remote_eip_712");
+        authenticator = await Authenticator.deploy({owner:"0x2fe23f4cc4eb278306a9b500c8fb696c74229dae4aee91b16ab06bdb099c0d3"});
         console.log("deployed");
     });
 
@@ -123,21 +123,23 @@ describe("Authenticator", function () {
         const proposeTypes = {
             Order: [
               { name: 'authenticator', type: 'bytes32' },
-              { name: 'base_token', type: 'bytes32' },
+              { name: 'base_asset', type: 'bytes32' },
               { name: 'author', type: 'address' },
-              { name: 'quote_token', type: 'bytes32' },
+              { name: 'quote_asset', type: 'bytes32' },
               { name: 'amount', type: 'uint256' },
               { name: 'price', type: 'uint256' },
               { name: 'strategy', type: 'uint256' },
+            //   { name: 'chainId', type: 'felt' },
+            //   { name: 'orderId', type: 'felt' },
               { name: 'salt', type: 'uint256' },
             ],
         };
 
         const message: any = {
             authenticator: authenticator.address,
-            base_token: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+            base_asset: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
             author: author, // author
-            quote_token: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b233", // token address
+            quote_asset: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b233", // token address
             amount: 1000,
             price: 200,
             strategy: 1,
@@ -168,7 +170,7 @@ describe("Authenticator", function () {
             s: s,
             v: v,
             salt: salt,
-            base_token: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+            base_asset: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
             calldata: proposeCalldata,
         });
     });
