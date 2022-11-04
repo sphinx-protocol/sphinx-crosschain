@@ -123,15 +123,14 @@ contract L1EthRemoteCore {
     // Note: this logic assumes that the messaging layer will never fail.
     function confirmRemoteWithdraw(
         uint256 tokenAddress,
-        uint256 amount,
-        uint256 userAddress
+        uint256 amount
         // uint256 nonce
     ) external {
         require(remoteAddressIsSet, "No prover");
 
         // Construct the L2 -> L1 withdrawal message payload.
         uint256[] memory payload = new uint256[](4);
-        payload[0] = userAddress;
+        payload[0] = uint160(msg.sender);
         payload[1] = tokenAddress;
         payload[2] = amount;
         payload[3] = ETH_GOERLI_CHAIN_ID;
