@@ -19,7 +19,7 @@ interface IStarknetCore {
     ) external payable returns (bytes32);
 }
 
-contract EthRemoteCore {
+contract L1EthRemoteCore {
     address public owner;
     bool public remoteAddressIsSet = false;
     uint256 public l2EthRemoteCoreAddress;

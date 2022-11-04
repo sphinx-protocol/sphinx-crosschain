@@ -1,31 +1,40 @@
 %lang starknet
 
-from starkware.cairo.common.cairo_builtins import (HashBuiltin, BitwiseBuiltin)
+from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import assert_lt_felt, assert_le
 from starkware.starknet.common.messages import send_message_to_l1
+from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from contracts.starknet.lib.openzeppelin.access.ownable.library import Ownable
 from contracts.starknet.lib.math_utils import MathUtils
 
+// 
+// External contract interfaces
+//
+
 @contract_interface
 namespace IGatewayContract {
     // Relay remote deposit from other chain
-    func remote_deposit(user : felt, chain_id : felt, asset : felt, amount : felt, chain_id : felt) {
+    func remote_deposit(user : felt, asset : felt, amount : felt) {
     }
     // Relay remote withdraw from other chain.
-    func remote_withdraw(user : felt, chain_id : felt, asset : felt, amount : felt, chain_id : felt) {
+    func remote_withdraw(user : felt, chain_id : felt, asset : felt, amount : felt) {
     }
 }
 
+// 
+// Storage vars
+//
+
 // Contract address for L1 EthRemoteCore
 @storage_var
-func L1_eth_remote_address() -> (res : felt) {
+func l1_eth_remote_address() -> (res : felt) {
 }
 // 1 if contract address for L1 EthRemoteCore has been set, 0 otherwise
 @storage_var
-func is_eth_remote_addr_set() -> (bool : felt) {
+func is_l1_eth_remote_addr_set() -> (bool : felt) {
 }
 // Contract address for GatewayContract
 @storage_var
@@ -44,14 +53,22 @@ func nonce() -> (nonce : felt) {
 func nullifiers(nullifier : Uint256) -> (exist : felt) {
 }
 
+// 
+// Events (for Apibara)
+//
+
 // Log remote deposit 
 @event
-func log_remote_deposit(user_address : felt, token_address: felt, amount: felt, nonce: felt) {
+func log_remote_deposit(user_address : felt, token_address: felt, amount: felt, nonce: felt, chain_id : felt) {
 }
 // Log remote withdraw
 @event
-func log_remote_withdraw(user_address : felt, token_address: felt, amount: felt, nonce: felt) {
+func log_remote_withdraw(user_address : felt, token_address: felt, amount: felt, nonce: felt, chain_id : felt) {
 }
+
+// 
+// Constructor
+//
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (owner: felt) {
@@ -59,29 +76,34 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     return ();
 }
 
+// 
+// Functions
+//
+
 @external
 func set_addresses{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
-    _L1_eth_remote_address: felt, _gateway_addr : felt
+    _l1_eth_remote_address: felt, _gateway_addr : felt
 ) {
     Ownable.assert_only_owner();
-    let (is_remote_set) = is_eth_remote_addr_set.read();
+    let (is_remote_set) = is_l1_eth_remote_addr_set.read();
     let (is_gateway_set) = is_gateway_addr_set.read();
-    assert is_remote_set + is_gateway_set == 0
-    L1_eth_remote_address.write(_L1_eth_remote_address);
+    assert is_remote_set + is_gateway_set = 0;
+    l1_eth_remote_address.write(_l1_eth_remote_address);
     gateway_addr.write(_gateway_addr);
-    is_eth_remote_addr_set.write(1);
+    is_l1_eth_remote_addr_set.write(1);
     is_gateway_addr_set.write(1);
     return ();
 }
 
 @view
-func view_nonce{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} () -> (currentNonce: felt) {
-    let (currentNonce) = counter.read();
-    return (currentNonce=currentNonce);
+func view_nonce{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} () -> (current_nonce: felt) {
+    let (current_nonce) = nonce.read();
+    return (current_nonce=current_nonce);
 }
 
 // Handle request from L1 EthRemoteCore contract to deposit assets to DEX.
-@l1_handler
+// @l1_handler
+@external
 func remote_deposit{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
@@ -93,15 +115,21 @@ func remote_deposit{
     alloc_locals;
 
     // Make sure the message was sent by the intended L1 contract.
-    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
-    assert from_address = _L1_eth_remote_address;
+    let (_l1_eth_remote_address) = l1_eth_remote_address.read();
+    assert from_address = _l1_eth_remote_address;
+
+    let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
+    let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
+    let (amount_u256) = MathUtils.felt_to_uint256(amount);
+    let (nonce_u256) = MathUtils.felt_to_uint256(nonce);
+    let (chain_id_u256) = MathUtils.felt_to_uint256(chain_id);
 
     let (payload_data : Uint256*) = alloc();
-    assert payload_data[0] = user_address;
-    assert payload_data[1] = token_address;
-    assert payload_data[2] = amount;
-    assert payload_data[3] = nonce;
-    assert payload_data[4] = chain_id;
+    assert payload_data[0] = user_address_u256;
+    assert payload_data[1] = token_address_u256;
+    assert payload_data[2] = amount_u256;
+    assert payload_data[3] = nonce_u256;
+    assert payload_data[4] = chain_id_u256;
 
     let (local keccak_ptr: felt*) = alloc();
     let keccak_ptr_start = keccak_ptr;
@@ -116,8 +144,8 @@ func remote_deposit{
     nullifiers.write(nullifier, 1);
     
     let (_gateway_addr) = gateway_addr.read();
-    IGatewayContract.remote_deposit(_gateway_addr, user_address, chain_id, token_address, amount); 
-    log_remote_deposit.emit(user_address, token_address, amount, current_nonce, chain_id);
+    IGatewayContract.remote_deposit(_gateway_addr, user_address, token_address, amount); 
+    log_remote_deposit.emit(user_address, token_address, amount, nonce, chain_id);
 
     return (success=1);
 }
@@ -142,9 +170,9 @@ func remote_withdraw{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_che
 
     nonce.write(current_nonce + 1);
 
-    let (_L1_eth_remote_address) = L1_eth_remote_address.read();
+    let (_l1_eth_remote_address) = l1_eth_remote_address.read();
     send_message_to_l1(
-        to_address=_L1_eth_remote_address,
+        to_address=_l1_eth_remote_address,
         payload_size=5,
         payload=message_payload,
     );

@@ -1,7 +1,7 @@
 // To deploy: npx hardhat run --network goerli scripts/deploy_l1.ts
-// To verify: npx hardhat verify --network goerli 0x4b4fE3787407A999f41703e340F8D33B143443d7 "0xde29d060D45901Fb19ED6C6e959EB22d8626708e"
+// To verify: npx hardhat verify --network goerli 0xF7D18E41638cC1790999Fc390B72c8b0A574602d "0xa4eD3aD27c294565cB0DCc993BDdCC75432D498c"
 
-// Deployment address: 0xc489D8139DEE2D3448785959251541990808c02C
+// Deployment address: 0xF7D18E41638cC1790999Fc390B72c8b0A574602d
 
 import { ethers } from "hardhat"
 
@@ -10,11 +10,11 @@ async function main() {
     console.log("Deploying contracts with the account:", deployer.address)
     console.log("Account balance:", (await deployer.getBalance()).toString())
 
-    const starknetCoreContractAddress = "0xde29d060D45901Fb19ED6C6e959EB22d8626708e"
-    const gatewayContract = await ethers.getContractFactory("DummyCore")
-    const gateway = await gatewayContract.deploy(starknetCoreContractAddress)
+    const starknetCoreContractAddress = "0xa4eD3aD27c294565cB0DCc993BDdCC75432D498c"
+    const L1EthRemoteCoreContract = await ethers.getContractFactory("L1EthRemoteCore")
+    const L1EthRemoteCore = await L1EthRemoteCoreContract.deploy(starknetCoreContractAddress)
 
-    console.log("DummyCore address:", gateway.address)
+    console.log("L1EthRemoteCore address:", L1EthRemoteCore.address)
 }
 
 main()
