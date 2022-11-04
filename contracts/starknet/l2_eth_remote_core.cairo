@@ -173,7 +173,7 @@ func remote_withdraw{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_che
     let (_l1_eth_remote_address) = l1_eth_remote_address.read();
     send_message_to_l1(
         to_address=_l1_eth_remote_address,
-        payload_size=5,
+        payload_size=4,
         payload=message_payload,
     );
 
