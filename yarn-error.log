@@ -1,0 +1,61 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add @openzeppelin
+
+PATH: 
+  /Users/remigai/cairo_venv/bin:/Users/remigai/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/remigai/.cargo/bin:/Users/remigai/.starklings/dist/starklings:/Users/remigai/.protostar/dist/protostar:/Users/remigai/.starklings/dist/starklings:/Users/remigai/.starklings/dist/starklings:/Users/remigai/.protostar/dist/protostar
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.17.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@openzeppelin: Request "https://registry.yarnpkg.com/@openzeppelin" returned a 405
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66154:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1358:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "hardhat-project",
+    "devDependencies": {
+      "@nomiclabs/hardhat-ethers": "^2.0.5",
+      "@shardlabs/starknet-hardhat-plugin": "0.6.7",
+      "@types/chai": "^4.2.22",
+      "@types/elliptic": "^6.4.14",
+      "@types/mocha": "^9.0.0",
+      "@types/node": "^16.11.10",
+      "@typescript-eslint/eslint-plugin": "^5.8.1",
+      "@typescript-eslint/parser": "^5.8.1",
+      "chai": "^4.3.4",
+      "dotenv": "^16.0.1",
+      "eslint": "^8.5.0",
+      "ethers": "^5.4.6",
+      "prettier-eslint-cli": "^7.0.0",
+      "ts-node": "^10.4.0",
+      "typescript": "^4.5.2"
+    },
+    "dependencies": {
+      "@toruslabs/starkware-crypto": "^1.1.0",
+      "axios": "^0.24.0",
+      "hardhat": "2.9.9",
+      "@snapshot-labs/sx": "0.1.0-beta.12"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
