@@ -23,7 +23,7 @@ contract L1EthRemoteCore {
     address public owner;
     bool public remoteAddressIsSet = false;
     uint256 public l2EthRemoteCoreAddress;
-    uint256 public nonce;
+    // uint256 public nonce;
 
     /// starknetSelector("remote_deposit")
     uint256 public REMOTE_DEPOSIT_SELECTOR =
@@ -39,7 +39,7 @@ contract L1EthRemoteCore {
     constructor(IStarknetCore _starknetCore) {
         starknetCore = _starknetCore;
         owner = msg.sender;
-        nonce = 0;
+        // nonce = 0;
     }
 
     modifier OnlyOwner() {
@@ -48,8 +48,7 @@ contract L1EthRemoteCore {
     }
 
     function setRemoteAddress(uint256 _l2EthRemoteCoreAddress)
-        external
-        OnlyOwner
+        external OnlyOwner
     {
         l2EthRemoteCoreAddress = _l2EthRemoteCoreAddress;
         remoteAddressIsSet = true;
@@ -79,14 +78,15 @@ contract L1EthRemoteCore {
         IERC20(tokenAddress).transfer(address(this), amount);
 
         // Construct the L1 -> L2 message payload.
-        uint256[] memory payload = new uint256[](5);
+        uint256[] memory payload = new uint256[](4);
         payload[0] = uint160(msg.sender);
         payload[1] = ethToStarknetERC20Addresses[tokenAddress];
         payload[2] = amount;
-        payload[3] = nonce;
-        payload[4] = ETH_GOERLI_CHAIN_ID;
+        payload[3] = ETH_GOERLI_CHAIN_ID;
+        // payload[3] = nonce;
+        // payload[4] = ETH_GOERLI_CHAIN_ID;
 
-        nonce++;
+        // nonce++;
 
         // Pass in a message fee.
         starknetCore.sendMessageToL2{value: msg.value}(
@@ -107,10 +107,11 @@ contract L1EthRemoteCore {
         payload[0] = uint160(msg.sender);
         payload[1] = uint160(tokenAddress);
         payload[2] = amount;
-        payload[3] = nonce;
-        payload[4] = ETH_GOERLI_CHAIN_ID;
+        payload[3] = ETH_GOERLI_CHAIN_ID;
+        // payload[3] = nonce;
+        // payload[4] = ETH_GOERLI_CHAIN_ID;
 
-        nonce++;
+        // nonce++;
 
         starknetCore.sendMessageToL2(
             l2EthRemoteCoreAddress,
@@ -123,8 +124,8 @@ contract L1EthRemoteCore {
     function confirmRemoteWithdraw(
         uint256 tokenAddress,
         uint256 amount,
-        uint256 userAddress,
-        uint256 nonce
+        uint256 userAddress
+        // uint256 nonce
     ) external {
         require(remoteAddressIsSet, "No prover");
 
@@ -133,8 +134,10 @@ contract L1EthRemoteCore {
         payload[0] = userAddress;
         payload[1] = tokenAddress;
         payload[2] = amount;
-        payload[3] = nonce;
-        payload[4] = ETH_GOERLI_CHAIN_ID;
+        payload[3] = ETH_GOERLI_CHAIN_ID;
+        // payload[4] = ETH_GOERLI_CHAIN_ID;
+        // payload[3] = nonce;
+        // payload[4] = ETH_GOERLI_CHAIN_ID;
 
         // Fails if message doesn't exist.
         starknetCore.consumeMessageFromL2(l2EthRemoteCoreAddress, payload);
