@@ -141,7 +141,7 @@ contract L1EthRemoteCore {
         // Fails if message doesn't exist.
         starknetCore.consumeMessageFromL2(l2EthRemoteCoreAddress, payload);
 
-        address convertedUserAddress = address(uint160(userAddress));
+        address convertedUserAddress = address(uint160(msg.sender));
         address convertedTokenAddress = starknetToEthERC20Addresses[
             tokenAddress
         ];
