@@ -44,10 +44,7 @@ func gateway_addr() -> (res : felt) {
 @storage_var
 func is_gateway_addr_set() -> (bool : felt) {
 }
-// Nonce
-// @storage_var
-// func nonce() -> (nonce : felt) {
-// }
+
 // Nullifiers
 @storage_var
 func nullifiers(nullifier : Uint256) -> (exist : felt) {
@@ -95,12 +92,6 @@ func set_addresses{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check
     return ();
 }
 
-// @view
-// func view_nonce{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} () -> (current_nonce: felt) {
-//     let (current_nonce) = nonce.read();
-//     return (current_nonce=current_nonce);
-// }
-
 // Handle request from L1 EthRemoteCore contract to deposit assets to DEX.
 // @l1_handler
 @external
@@ -121,14 +112,12 @@ func remote_deposit{
     let (user_address_u256) = MathUtils.felt_to_uint256(user_address);
     let (token_address_u256) = MathUtils.felt_to_uint256(token_address);
     let (amount_u256) = MathUtils.felt_to_uint256(amount);
-    // let (nonce_u256) = MathUtils.felt_to_uint256(nonce);
     let (chain_id_u256) = MathUtils.felt_to_uint256(chain_id);
 
     let (payload_data : Uint256*) = alloc();
     assert payload_data[0] = user_address_u256;
     assert payload_data[1] = token_address_u256;
     assert payload_data[2] = amount_u256;
-    // assert payload_data[3] = nonce_u256;
     assert payload_data[3] = chain_id_u256;
 
     let (local keccak_ptr: felt*) = alloc();
@@ -159,16 +148,11 @@ func remote_withdraw{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_che
     let (_gateway_addr) = gateway_addr.read();
     assert caller = _gateway_addr;
 
-    // let (current_nonce) = nonce.read();
-
     let (message_payload : felt*) = alloc();
     assert message_payload[0] = user_address;
     assert message_payload[1] = token_address;
     assert message_payload[2] = amount;
-    // assert message_payload[3] = current_nonce;
     assert message_payload[3] = chain_id;
-
-    // nonce.write(current_nonce + 1);
 
     let (_l1_eth_remote_address) = l1_eth_remote_address.read();
     send_message_to_l1(
