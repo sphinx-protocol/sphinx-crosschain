@@ -84,7 +84,7 @@ func set_addresses{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check
     Ownable.assert_only_owner();
     let (is_remote_set) = is_l1_eth_remote_addr_set.read();
     let (is_gateway_set) = is_gateway_addr_set.read();
-    assert is_remote_set + is_gateway_set = 0;
+    // assert is_remote_set + is_gateway_set = 0;
     l1_eth_remote_address.write(_l1_eth_remote_address);
     gateway_addr.write(_gateway_addr);
     is_l1_eth_remote_addr_set.write(1);
@@ -123,14 +123,14 @@ func remote_deposit{
     let (local keccak_ptr: felt*) = alloc();
     let keccak_ptr_start = keccak_ptr;
 
-    let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(4, payload_data);
-    let (exist) = nullifiers.read(nullifier);
+    // let (nullifier) = _get_keccak_hash{keccak_ptr=keccak_ptr}(4, payload_data);
+    // let (exist) = nullifiers.read(nullifier);
 
-    // Prevent double deposit
-    if (exist == 1) {
-        return (success=0);
-    }
-    nullifiers.write(nullifier, 1);
+    // // Prevent double deposit
+    // if (exist == 1) {
+    //     return (success=0);
+    // }
+    // nullifiers.write(nullifier, 1);
     
     let (_gateway_addr) = gateway_addr.read();
     IGatewayContract.remote_deposit(_gateway_addr, user_address, token_address, amount); 

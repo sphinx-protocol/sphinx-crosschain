@@ -63,7 +63,9 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 func set_gateway_addr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (_gateway_addr : felt) {
     Ownable.assert_only_owner();
     let (is_set) = is_gateway_addr_set.read();
-    assert is_set = 0;
+    // with_attr error_message("Gateway address already set") {
+    //     assert is_set = 0;
+    // }
     gateway_addr.write(_gateway_addr);
     is_gateway_addr_set.write(1);
     return ();
