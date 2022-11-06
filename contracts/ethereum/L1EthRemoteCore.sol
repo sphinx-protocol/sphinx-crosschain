@@ -23,7 +23,6 @@ contract L1EthRemoteCore {
     address public owner;
     bool public remoteAddressIsSet = false;
     uint256 public l2EthRemoteCoreAddress;
-    // uint256 public nonce;
 
     /// starknetSelector("remote_deposit")
     uint256 public REMOTE_DEPOSIT_SELECTOR =
@@ -39,7 +38,6 @@ contract L1EthRemoteCore {
     constructor(IStarknetCore _starknetCore) {
         starknetCore = _starknetCore;
         owner = msg.sender;
-        // nonce = 0;
     }
 
     modifier OnlyOwner() {
@@ -83,10 +81,6 @@ contract L1EthRemoteCore {
         payload[1] = ethToStarknetERC20Addresses[tokenAddress];
         payload[2] = amount;
         payload[3] = ETH_GOERLI_CHAIN_ID;
-        // payload[3] = nonce;
-        // payload[4] = ETH_GOERLI_CHAIN_ID;
-
-        // nonce++;
 
         // Pass in a message fee.
         starknetCore.sendMessageToL2{value: msg.value}(
@@ -108,10 +102,6 @@ contract L1EthRemoteCore {
         payload[1] = uint160(tokenAddress);
         payload[2] = amount;
         payload[3] = ETH_GOERLI_CHAIN_ID;
-        // payload[3] = nonce;
-        // payload[4] = ETH_GOERLI_CHAIN_ID;
-
-        // nonce++;
 
         starknetCore.sendMessageToL2(
             l2EthRemoteCoreAddress,
@@ -124,7 +114,6 @@ contract L1EthRemoteCore {
     function confirmRemoteWithdraw(
         uint256 tokenAddress,
         uint256 amount
-        // uint256 nonce
     ) external {
         require(remoteAddressIsSet, "No prover");
 
@@ -134,9 +123,6 @@ contract L1EthRemoteCore {
         payload[1] = tokenAddress;
         payload[2] = amount;
         payload[3] = ETH_GOERLI_CHAIN_ID;
-        // payload[4] = ETH_GOERLI_CHAIN_ID;
-        // payload[3] = nonce;
-        // payload[4] = ETH_GOERLI_CHAIN_ID;
 
         // Fails if message doesn't exist.
         starknetCore.consumeMessageFromL2(l2EthRemoteCoreAddress, payload);
