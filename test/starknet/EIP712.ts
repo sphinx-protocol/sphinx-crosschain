@@ -164,6 +164,30 @@ describe("Authenticator", function () {
         console.log("s", s);
         console.log("v", v);
 
+        console.log("inputs", {price: 200,
+        amount: 1000,
+        strategy: 1,
+        chainId: 5,
+        orderId: 123456,
+        r: r,
+        s: s,
+        v: v,
+        salt: salt,
+        base_asset: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+        calldata: proposeCalldata});
+        console.log({
+            price: 200,
+            amount: 1000,
+            strategy: 1,
+            chainId: 5,
+            orderId: 123456,
+            r: r,
+            s: s,
+            v: v,
+            salt: salt,
+            base_asset: "0x06441c218ead27ee136579bad2c1705020e807f25d0b392e72b14e21b012b2f8",
+            calldata: proposeCalldata,
+        });
         await controller.invoke(authenticator, 'authenticate', {
             price: 200,
             amount: 1000,
