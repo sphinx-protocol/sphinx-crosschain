@@ -73,7 +73,7 @@ contract L1EthRemoteCore {
         payable
     {
         require(remoteAddressIsSet, "No prover");
-        IERC20(tokenAddress).transfer(address(this), amount);
+        IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
 
         // Construct the L1 -> L2 message payload.
         uint256[] memory payload = new uint256[](4);
