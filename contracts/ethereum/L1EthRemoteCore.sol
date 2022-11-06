@@ -133,10 +133,10 @@ contract L1EthRemoteCore {
         ];
 
         // hash of payload is the nullifier to avoid double spending
-        bytes32 nullifier = keccak256(abi.encodePacked(payload));
-        require(!nullifiers[nullifier], "Double spend");
+        // bytes32 nullifier = keccak256(abi.encodePacked(payload));
+        // require(!nullifiers[nullifier], "Double spend");
 
         IERC20(convertedTokenAddress).transfer(convertedUserAddress, amount);
-        nullifiers[nullifier] = true;
+        // nullifiers[nullifier] = true;
     }
 }
