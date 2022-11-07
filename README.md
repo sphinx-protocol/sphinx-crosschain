@@ -1,10 +1,5 @@
-# Getting started
+# starkx-crosschain
 
-Requires docker.
-You can run the test file that verifies the Ethereum EIP 712 signature on Starknet:
+This repo contains the crosschain RemoteCore contracts for Stark X. 
 
-```shell
-npx install
-npx hardhat starknet-compile contracts/starknet/l2_eth_remote_eip_712.cairo --disable-hint-validation
-npx hardhat test
-```
+Please see [here](https://github.com/stark-dex) for a description of the project.
